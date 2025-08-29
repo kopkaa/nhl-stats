@@ -1,0 +1,8 @@
+schema: libs/shared/graphql/schema.gql
+documents: "apps/web/src/**/*.vue"
+generates:
+  libs/shared/graphql/generated.ts:
+    plugins:
+      - typescript
+      - typescript-operations
+      - typescript-vue-apollo

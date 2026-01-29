@@ -18,16 +18,13 @@ export class TeamsService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {
-    this.statsApiBaseUrl = this.configService.getOrThrow<string>(
-      'NHL_STATS_API_BASE_URL',
-    );
+    this.statsApiBaseUrl =
+      this.configService.getOrThrow<string>('NHL_API_BASE_URL');
   }
 
   async findAll(): Promise<Team[]> {
     const { data } = await firstValueFrom(
-      this.httpService.get<NhlTeamsApiResponse>(
-        `${this.statsApiBaseUrl}/team`,
-      ),
+      this.httpService.get<NhlTeamsApiResponse>(`${this.statsApiBaseUrl}/team`),
     );
 
     return data.data

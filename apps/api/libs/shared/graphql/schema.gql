@@ -3,11 +3,14 @@
 # ------------------------------------------------------
 
 type Team {
-  id: ID!
-  name: String!
+  id: Int!
+  franchiseId: Int
+  fullName: String!
+  triCode: String!
+  logo: String
 }
 
 type Query {
   teams: [Team!]!
-  team(id: String!): Team
+  team(id: Int!): Team
 }

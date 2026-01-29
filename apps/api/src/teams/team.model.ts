@@ -1,10 +1,19 @@
-import { ObjectType, Field, ID } from '@nestjs/graphql';
+import { ObjectType, Field, Int } from '@nestjs/graphql';
 
 @ObjectType()
 export class Team {
-  @Field(() => ID)
-  id: string;
+  @Field(() => Int)
+  id: number;
+
+  @Field(() => Int, { nullable: true })
+  franchiseId: number | null;
 
   @Field()
-  name: string;
+  fullName: string;
+
+  @Field()
+  triCode: string;
+
+  @Field({ nullable: true })
+  logo?: string;
 }

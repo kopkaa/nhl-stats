@@ -1,4 +1,4 @@
-import { Resolver, Query, Args } from '@nestjs/graphql';
+import { Resolver, Query, Args, Int } from '@nestjs/graphql';
 import { TeamsService } from './teams.service';
 import { Team } from './team.model';
 
@@ -12,7 +12,7 @@ export class TeamsResolver {
   }
 
   @Query(() => Team, { nullable: true })
-  team(@Args('id') id: string) {
+  team(@Args('id', { type: () => Int }) id: number) {
     return this.teamsService.findOne(id);
   }
 }

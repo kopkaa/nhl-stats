@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { DatabaseModule } from './database';
 import { TeamsModule } from './teams/teams.module';
 
 @Module({
@@ -11,6 +12,7 @@ import { TeamsModule } from './teams/teams.module';
       driver: ApolloDriver,
       autoSchemaFile: 'libs/shared/graphql/schema.gql',
     }),
+    DatabaseModule,
     TeamsModule,
   ],
 })

@@ -10,7 +10,9 @@
   "scripts": {
     "dev:api": "pnpm --filter api start:dev",
     "dev:web": "pnpm --filter web dev",
-    "codegen": "graphql-codegen --config codegen.yml"
+    "codegen": "graphql-codegen --config codegen.yml",
+    "db:generate": "pnpm --filter api db:generate",
+    "db:migrate": "pnpm --filter api db:migrate"
   },
   "keywords": [],
   "author": "",

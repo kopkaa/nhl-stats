@@ -4,12 +4,8 @@ import { ConfigService } from '@nestjs/config';
 import { sql } from 'drizzle-orm';
 import { firstValueFrom } from 'rxjs';
 import { DatabaseService, teams } from '../database';
+import { HISTORIC_TEAM_IDS } from './teams.constants';
 import { NhlTeamsApiResponse } from './teams.types';
-
-const HISTORIC_TEAM_IDS = new Set([
-  11, 27, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
-  48, 49, 50, 51, 56, 57, 58, 70, 99,
-]);
 
 @Injectable()
 export class TeamsSyncService {

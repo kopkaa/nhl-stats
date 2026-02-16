@@ -3,10 +3,13 @@ import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { eq } from 'drizzle-orm';
 import { firstValueFrom } from 'rxjs';
+import { CacheService } from '../cache';
+import { DatabaseService, teams } from '../database';
 import { Team } from './team.model';
 import { HISTORIC_TEAM_IDS } from './teams.constants';
 import { NhlTeamResponse, NhlTeamsApiResponse } from './teams.types';
-import { DatabaseService, teams } from '../database';
+
+const CACHE_TTL = 3600; // 1 hour
 
 @Injectable()
 export class TeamsService {
@@ -17,12 +20,30 @@ export class TeamsService {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
     private readonly databaseService: DatabaseService,
+    private readonly cacheService: CacheService,
   ) {
     this.statsApiBaseUrl =
       this.configService.getOrThrow<string>('NHL_API_BASE_URL');
   }
 
   async findAll(): Promise<Team[]> {
+    return this.cacheService.getOrSet(
+      'teams:all',
+      () => this.fetchAllFromDb(),
+      CACHE_TTL,
+    );
+  }
+
+  async findOne(id: number): Promise<Team | undefined> {
+    const result = await this.cacheService.getOrSet(
+      `teams:${id}`,
+      () => this.fetchOneFromDb(id),
+      CACHE_TTL,
+    );
+    return result ?? undefined;
+  }
+
+  private async fetchAllFromDb(): Promise<Team[]> {
     const dbTeams = await this.databaseService.db
       .select()
       .from(teams)
@@ -44,7 +65,7 @@ export class TeamsService {
     return this.fetchFromApi();
   }
 
-  async findOne(id: number): Promise<Team | undefined> {
+  private async fetchOneFromDb(id: number): Promise<Team | null> {
     const rows = await this.databaseService.db
       .select()
       .from(teams)
@@ -66,7 +87,7 @@ export class TeamsService {
       `Team ${id} not found in database, falling back to NHL API.`,
     );
     const allTeams = await this.fetchFromApi();
-    return allTeams.find((t) => t.id === id);
+    return allTeams.find((team) => team.id === id) ?? null;
   }
 
   private async fetchFromApi(): Promise<Team[]> {

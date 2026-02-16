@@ -9,7 +9,7 @@ import { Team } from './team.model';
 import { HISTORIC_TEAM_IDS } from './teams.constants';
 import { NhlTeamResponse, NhlTeamsApiResponse } from './teams.types';
 
-const CACHE_TTL = 3600; // 1 hour
+const CACHE_TTL = 86400; // 24 hours
 
 @Injectable()
 export class TeamsService {

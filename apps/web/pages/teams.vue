@@ -22,26 +22,22 @@ const teams = computed(() => result.value?.teams ?? []);
       v-else
       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
     >
-      <Card
+      <div
         v-for="team in teams"
         :key="team.id"
-        class="transition-all hover:border-gray-600 cursor-pointer"
+        class="flex flex-col items-center gap-3 p-6 rounded-xl border border-gray-800 bg-gray-900 transition-all hover:border-gray-600 cursor-pointer"
       >
-        <template #content>
-          <div class="flex flex-col items-center gap-3">
-            <img
-              v-if="team.logo"
-              :src="team.logo"
-              :alt="team.fullName"
-              class="w-20 h-20 object-contain"
-            />
-            <div class="text-center">
-              <div class="font-semibold">{{ team.fullName }}</div>
-              <div class="text-sm text-gray-400">{{ team.triCode }}</div>
-            </div>
-          </div>
-        </template>
-      </Card>
+        <img
+          v-if="team.logo"
+          :src="team.logo"
+          :alt="team.fullName"
+          class="w-20 h-20 object-contain"
+        />
+        <div class="text-center">
+          <div class="font-semibold">{{ team.fullName }}</div>
+          <div class="text-sm text-gray-400">{{ team.triCode }}</div>
+        </div>
+      </div>
     </div>
   </div>
 </template>

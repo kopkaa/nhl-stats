@@ -1,8 +1,11 @@
 schema: libs/shared/graphql/schema.gql
-documents: "apps/web/**/*.vue"
+documents: "apps/web/graphql/**/*.graphql"
 generates:
-  libs/shared/graphql/generated.ts:
+  apps/web/graphql/generated.ts:
     plugins:
       - typescript
       - typescript-operations
       - typescript-vue-apollo
+    config:
+      withCompositionFunctions: true
+      vueCompositionApiImportFrom: "@vue/apollo-composable"

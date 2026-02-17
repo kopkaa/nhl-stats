@@ -1,0 +1,8 @@
+query GetTeams {
+  teams {
+    id
+    fullName
+    triCode
+    logo
+  }
+}

@@ -1,0 +1,21 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Team {
+  id: Int!
+  franchiseId: Int
+  fullName: String!
+  triCode: String!
+  logo: String
+}
+
+type Query {
+  teams: [Team!]!
+  team(id: Int!): Team
+}
+
+type Mutation {
+  """Sync teams from NHL API to database"""
+  syncTeams: Int!
+}

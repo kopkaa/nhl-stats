@@ -4,6 +4,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { CacheModule } from './cache';
 import { DatabaseModule } from './database';
+import { HealthModule } from './health';
 import { TeamsModule } from './teams/teams.module';
 
 @Module({
@@ -15,6 +16,7 @@ import { TeamsModule } from './teams/teams.module';
     }),
     DatabaseModule,
     CacheModule,
+    HealthModule,
     TeamsModule,
   ],
 })

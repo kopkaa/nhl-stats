@@ -1,5 +1,6 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { sql } from 'drizzle-orm';
 import { drizzle, PostgresJsDatabase } from 'drizzle-orm/postgres-js';
 import postgres from 'postgres';
 import * as schema from './schema';
@@ -15,6 +16,11 @@ export class DatabaseService implements OnModuleDestroy {
 
     this.client = postgres(connectionString);
     this.db = drizzle({ client: this.client, schema });
+  }
+
+  async ping(): Promise<boolean> {
+    await this.db.execute(sql`SELECT 1`);
+    return true;
   }
 
   async onModuleDestroy() {

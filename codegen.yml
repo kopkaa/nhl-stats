@@ -1,5 +1,5 @@
 schema: libs/shared/graphql/schema.gql
-documents: "apps/web/src/**/*.vue"
+documents: "apps/web/**/*.vue"
 generates:
   libs/shared/graphql/generated.ts:
     plugins:

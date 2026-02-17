@@ -1,24 +1,24 @@
 {
   "name": "web",
   "private": true,
-  "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vue-tsc -b && vite build",
-    "preview": "vite preview"
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
   },
   "dependencies": {
-    "@apollo/client": "^4.0.2",
+    "@apollo/client": "^3.13.8",
     "@vue/apollo-composable": "^4.2.2",
     "graphql": "^16.11.0",
-    "vue": "^3.5.18"
+    "graphql-tag": "^2.12.6",
+    "nuxt": "^3.17.5",
+    "vue": "^3.5.18",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
-    "@vitejs/plugin-vue": "^6.0.1",
-    "@vue/tsconfig": "^0.7.0",
-    "typescript": "~5.8.3",
-    "vite": "^7.1.2",
-    "vue-tsc": "^3.0.5"
+    "@nuxt/vite-builder": "3.21.1"
   }
 }

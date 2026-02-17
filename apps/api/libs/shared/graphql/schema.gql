@@ -14,3 +14,8 @@ type Query {
   teams: [Team!]!
   team(id: Int!): Team
 }
+
+type Mutation {
+  """Sync teams from NHL API to database"""
+  syncTeams: Int!
+}

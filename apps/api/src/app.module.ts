@@ -12,7 +12,7 @@ import { TeamsModule } from './teams/teams.module';
     ConfigModule.forRoot({ isGlobal: true }),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: 'libs/shared/graphql/schema.gql',
+      autoSchemaFile: 'schema.gql',
     }),
     DatabaseModule,
     CacheModule,

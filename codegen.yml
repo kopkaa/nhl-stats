@@ -1,4 +1,4 @@
-schema: libs/shared/graphql/schema.gql
+schema: apps/api/schema.gql
 documents: "apps/web/graphql/**/*.graphql"
 generates:
   apps/web/graphql/generated.ts:

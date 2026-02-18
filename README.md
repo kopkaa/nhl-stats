@@ -2,7 +2,7 @@
 
 Full-stack app to show NHL stats. NestJS GraphQL backend, Nuxt frontend, PostgreSQL, Redis.
 
-## Prerekvizity
+## Requirements
 
 - Node.js 22+
 - pnpm 10+
@@ -24,7 +24,7 @@ pnpm db:migrate
 pnpm codegen
 ```
 
-## Spuštění
+## Start
 
 ```bash
 # Backend
@@ -44,7 +44,9 @@ Frontend: http://localhost:3001
 apps/
   api/    — NestJS, Apollo Server, Drizzle ORM
   web/    — Nuxt 3, Vue 3, Apollo Client, PrimeVue
-libs/
-  shared/ — GraphQL schema a generované typy
 ```
+
+## Architecture
+
+![Architecture](docs/architecture.png)
 

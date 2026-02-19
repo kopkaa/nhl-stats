@@ -5,7 +5,7 @@ import { DatabaseService } from '../database';
 import { standings, teams } from '../database/schema';
 import { Standing } from './standing.model';
 
-const CACHE_TTL = 300; // 5 minutes
+const CACHE_TTL = 43200; // 12 hours
 
 const selectFields = {
   teamId: standings.teamId,

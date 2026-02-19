@@ -3,7 +3,13 @@ import { useGetStandingsQuery } from '~/graphql/generated';
 
 const { result, loading, error } = useGetStandingsQuery({});
 
-const standings = computed(() => result.value?.standings ?? []);
+const standings = computed(() => {
+  return (result.value?.standings ?? []).map((row) => {
+    const diff = row.goalsFor - row.goalsAgainst;
+    const streak = `${row.streakCode}${row.streakCount}`;
+    return { ...row, diff, streak };
+  });
+});
 </script>
 
 <template>
@@ -18,60 +24,57 @@ const standings = computed(() => result.value?.standings ?? []);
       {{ error.message }}
     </Message>
 
-    <div v-else class="overflow-x-auto">
-      <table class="w-full text-sm">
-        <thead>
-          <tr class="border-b border-gray-800 text-gray-400 text-left">
-            <th class="py-3 px-2 w-8">#</th>
-            <th class="py-3 px-2">Team</th>
-            <th class="py-3 px-2 text-center">GP</th>
-            <th class="py-3 px-2 text-center">W</th>
-            <th class="py-3 px-2 text-center">L</th>
-            <th class="py-3 px-2 text-center">OTL</th>
-            <th class="py-3 px-2 text-center font-bold">PTS</th>
-            <th class="py-3 px-2 text-center">GF</th>
-            <th class="py-3 px-2 text-center">GA</th>
-            <th class="py-3 px-2 text-center">DIFF</th>
-            <th class="py-3 px-2 text-center">STRK</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="(row, index) in standings"
-            :key="row.teamId"
-            class="border-b border-gray-800/50 hover:bg-gray-900 transition-colors"
-          >
-            <td class="py-3 px-2 text-gray-500">{{ index + 1 }}</td>
-            <td class="py-3 px-2">
-              <div class="flex items-center gap-3">
-                <img
-                  v-if="row.teamLogo"
-                  :src="row.teamLogo"
-                  :alt="row.teamName"
-                  class="w-6 h-6 object-contain"
-                />
-                <span class="font-medium">{{ row.teamName }}</span>
-              </div>
-            </td>
-            <td class="py-3 px-2 text-center text-gray-400">{{ row.gamesPlayed }}</td>
-            <td class="py-3 px-2 text-center">{{ row.wins }}</td>
-            <td class="py-3 px-2 text-center">{{ row.losses }}</td>
-            <td class="py-3 px-2 text-center">{{ row.otLosses }}</td>
-            <td class="py-3 px-2 text-center font-bold">{{ row.points }}</td>
-            <td class="py-3 px-2 text-center text-gray-400">{{ row.goalsFor }}</td>
-            <td class="py-3 px-2 text-center text-gray-400">{{ row.goalsAgainst }}</td>
-            <td
-              class="py-3 px-2 text-center"
-              :class="row.goalsFor - row.goalsAgainst > 0 ? 'text-green-400' : 'text-red-400'"
-            >
-              {{ row.goalsFor - row.goalsAgainst > 0 ? '+' : '' }}{{ row.goalsFor - row.goalsAgainst }}
-            </td>
-            <td class="py-3 px-2 text-center text-gray-400">
-              {{ row.streakCode }}{{ row.streakCount }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    <DataTable
+      v-else
+      :value="standings"
+      sort-field="points"
+      :sort-order="-1"
+      removable-sort
+      size="small"
+    >
+      <Column header="#" style="width: 2.5rem">
+        <template #body="{ index }">
+          <span class="text-gray-500">{{ index + 1 }}</span>
+        </template>
+      </Column>
+
+      <Column header="Team" field="teamName" sortable>
+        <template #body="{ data }">
+          <div class="flex items-center gap-3">
+            <img
+              v-if="data.teamLogo"
+              :src="data.teamLogo"
+              :alt="data.teamName"
+              class="w-6 h-6 object-contain"
+            />
+            <span class="font-medium">{{ data.teamName }}</span>
+          </div>
+        </template>
+      </Column>
+
+      <Column field="gamesPlayed" header="GP" sortable />
+      <Column field="wins" header="W" sortable />
+      <Column field="losses" header="L" sortable />
+      <Column field="otLosses" header="OTL" sortable />
+
+      <Column field="points" header="PTS" sortable>
+        <template #body="{ data }">
+          <span class="font-bold">{{ data.points }}</span>
+        </template>
+      </Column>
+
+      <Column field="goalsFor" header="GF" sortable />
+      <Column field="goalsAgainst" header="GA" sortable />
+
+      <Column field="diff" header="DIFF" sortable>
+        <template #body="{ data }">
+          <span :class="data.diff > 0 ? 'text-green-400' : data.diff < 0 ? 'text-red-400' : ''">
+            {{ data.diff > 0 ? '+' : '' }}{{ data.diff }}
+          </span>
+        </template>
+      </Column>
+
+      <Column field="streak" header="STRK" />
+    </DataTable>
   </div>
 </template>

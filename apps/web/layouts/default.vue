@@ -13,18 +13,6 @@ const navItems = [
     class="fixed top-0 left-0 h-screen border-r border-gray-800 flex flex-col transition-all duration-300 bg-gray-950 z-10"
     :class="collapsed ? 'w-16' : 'w-60'"
   >
-    <div class="flex items-center h-16 px-4 border-b border-gray-800">
-      <NuxtLink to="/" class="flex items-center gap-3 no-underline overflow-hidden">
-        <span class="text-xl shrink-0">🏒</span>
-        <span
-          v-show="!collapsed"
-          class="text-lg font-bold text-white whitespace-nowrap"
-        >
-          NHL App
-        </span>
-      </NuxtLink>
-    </div>
-
     <nav class="flex-1 py-4 flex flex-col gap-1 px-2">
       <NuxtLink
         v-for="item in navItems"
@@ -37,6 +25,23 @@ const navItems = [
         <span v-show="!collapsed" class="whitespace-nowrap">{{ item.label }}</span>
       </NuxtLink>
     </nav>
+
+    <div class="border-t border-gray-800 flex flex-col items-center py-6 gap-2">
+      <NuxtLink to="/" class="no-underline flex flex-col items-center gap-2 overflow-hidden">
+        <img
+          src="~/assets/images/nhl_logo.svg"
+          alt="NHL"
+          class="object-contain"
+          :class="collapsed ? 'h-8 w-auto' : 'h-14 w-auto'"
+        />
+        <span
+          v-show="!collapsed"
+          class="text-xs font-semibold tracking-widest text-gray-500 uppercase"
+        >
+          NHL Stats
+        </span>
+      </NuxtLink>
+    </div>
 
     <div class="px-2 pb-4">
       <button

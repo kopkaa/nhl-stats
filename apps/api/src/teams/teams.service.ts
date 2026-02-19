@@ -7,7 +7,7 @@ import { CacheService } from '../cache';
 import { DatabaseService, teams } from '../database';
 import { Team } from './team.model';
 import { HISTORIC_TEAM_IDS } from './teams.constants';
-import { NhlTeamResponse, NhlTeamsApiResponse } from './teams.types';
+import type { NhlTeamResponse, NhlTeamsApiResponse } from './teams.types';
 
 const CACHE_TTL = 86400; // 24 hours
 

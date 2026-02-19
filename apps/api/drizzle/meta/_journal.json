@@ -8,6 +8,13 @@
       "when": 1770833710428,
       "tag": "0000_flat_virginia_dare",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1771415916943,
+      "tag": "0001_lyrical_ego",
+      "breakpoints": true
     }
   ]
 }

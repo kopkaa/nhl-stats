@@ -10,12 +10,36 @@ type Team {
   logo: String
 }
 
+type Standing {
+  teamId: Int!
+  teamName: String!
+  teamLogo: String
+  season: Int!
+  gamesPlayed: Int!
+  wins: Int!
+  losses: Int!
+  otLosses: Int!
+  points: Int!
+  goalsFor: Int!
+  goalsAgainst: Int!
+  divisionName: String
+  divisionRank: Int
+  conferenceName: String
+  conferenceRank: Int
+  streakCode: String
+  streakCount: Int
+}
+
 type Query {
   teams: [Team!]!
   team(id: Int!): Team
+  standings(season: Int): [Standing!]!
 }
 
 type Mutation {
   """Sync teams from NHL API to database"""
   syncTeams: Int!
+
+  """Sync standings from NHL API to database"""
+  syncStandings: Int!
 }

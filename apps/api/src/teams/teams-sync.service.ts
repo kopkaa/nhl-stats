@@ -5,7 +5,7 @@ import { sql } from 'drizzle-orm';
 import { firstValueFrom } from 'rxjs';
 import { DatabaseService, teams } from '../database';
 import { HISTORIC_TEAM_IDS } from './teams.constants';
-import { NhlTeamsApiResponse } from './teams.types';
+import type { NhlTeamsApiResponse } from './teams.types';
 
 @Injectable()
 export class TeamsSyncService {

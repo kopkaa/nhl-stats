@@ -41,6 +41,14 @@ export class CacheService implements OnModuleDestroy {
     await this.redis.del(key);
   }
 
+  async delByPrefix(prefix: string): Promise<number> {
+    const keys = await this.redis.keys(`${prefix}*`);
+    if (keys.length === 0) return 0;
+    await this.redis.del(...keys);
+    this.logger.debug(`Cache invalidated: ${keys.length} keys (${prefix}*)`);
+    return keys.length;
+  }
+
   async getOrSet<T>(
     key: string,
     fetcher: () => Promise<T>,

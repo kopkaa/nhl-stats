@@ -1,0 +1,18 @@
+query GetStandings($season: Int) {
+  standings(season: $season) {
+    teamId
+    teamName
+    teamLogo
+    gamesPlayed
+    wins
+    losses
+    otLosses
+    points
+    goalsFor
+    goalsAgainst
+    divisionName
+    conferenceName
+    streakCode
+    streakCount
+  }
+}

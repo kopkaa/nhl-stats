@@ -18,6 +18,18 @@ export type Scalars = {
   Float: { input: number; output: number; }
 };
 
+export enum Conference {
+  Eastern = 'Eastern',
+  Western = 'Western'
+}
+
+export enum Division {
+  Atlantic = 'Atlantic',
+  Central = 'Central',
+  Metropolitan = 'Metropolitan',
+  Pacific = 'Pacific'
+}
+
 export type Mutation = {
   __typename?: 'Mutation';
   /** Sync standings from NHL API to database */
@@ -35,7 +47,7 @@ export type Query = {
 
 
 export type QueryStandingsArgs = {
-  season?: InputMaybe<Scalars['Int']['input']>;
+  season?: InputMaybe<Scalars['String']['input']>;
 };
 
 
@@ -45,9 +57,9 @@ export type QueryTeamArgs = {
 
 export type Standing = {
   __typename?: 'Standing';
-  conferenceName?: Maybe<Scalars['String']['output']>;
+  conferenceName?: Maybe<Conference>;
   conferenceRank?: Maybe<Scalars['Int']['output']>;
-  divisionName?: Maybe<Scalars['String']['output']>;
+  divisionName?: Maybe<Division>;
   divisionRank?: Maybe<Scalars['Int']['output']>;
   gamesPlayed: Scalars['Int']['output'];
   goalsAgainst: Scalars['Int']['output'];
@@ -55,14 +67,20 @@ export type Standing = {
   losses: Scalars['Int']['output'];
   otLosses: Scalars['Int']['output'];
   points: Scalars['Int']['output'];
-  season: Scalars['Int']['output'];
-  streakCode?: Maybe<Scalars['String']['output']>;
+  season: Scalars['String']['output'];
+  streakCode?: Maybe<StreakCode>;
   streakCount?: Maybe<Scalars['Int']['output']>;
   teamId: Scalars['Int']['output'];
   teamLogo?: Maybe<Scalars['String']['output']>;
   teamName: Scalars['String']['output'];
   wins: Scalars['Int']['output'];
 };
+
+export enum StreakCode {
+  L = 'L',
+  Ot = 'OT',
+  W = 'W'
+}
 
 export type Team = {
   __typename?: 'Team';
@@ -74,11 +92,11 @@ export type Team = {
 };
 
 export type GetStandingsQueryVariables = Exact<{
-  season?: InputMaybe<Scalars['Int']['input']>;
+  season?: InputMaybe<Scalars['String']['input']>;
 }>;
 
 
-export type GetStandingsQuery = { __typename?: 'Query', standings: Array<{ __typename?: 'Standing', teamId: number, teamName: string, teamLogo?: string | null, gamesPlayed: number, wins: number, losses: number, otLosses: number, points: number, goalsFor: number, goalsAgainst: number, divisionName?: string | null, conferenceName?: string | null, streakCode?: string | null, streakCount?: number | null }> };
+export type GetStandingsQuery = { __typename?: 'Query', standings: Array<{ __typename?: 'Standing', teamId: number, teamName: string, teamLogo?: string | null, season: string, gamesPlayed: number, wins: number, losses: number, otLosses: number, points: number, goalsFor: number, goalsAgainst: number, divisionName?: Division | null, divisionRank?: number | null, conferenceName?: Conference | null, conferenceRank?: number | null, streakCode?: StreakCode | null, streakCount?: number | null }> };
 
 export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -87,11 +105,12 @@ export type GetTeamsQuery = { __typename?: 'Query', teams: Array<{ __typename?: 
 
 
 export const GetStandingsDocument = gql`
-    query GetStandings($season: Int) {
+    query GetStandings($season: String) {
   standings(season: $season) {
     teamId
     teamName
     teamLogo
+    season
     gamesPlayed
     wins
     losses
@@ -100,7 +119,9 @@ export const GetStandingsDocument = gql`
     goalsFor
     goalsAgainst
     divisionName
+    divisionRank
     conferenceName
+    conferenceRank
     streakCode
     streakCount
   }

@@ -1,8 +1,9 @@
-query GetStandings($season: Int) {
+query GetStandings($season: String) {
   standings(season: $season) {
     teamId
     teamName
     teamLogo
+    season
     gamesPlayed
     wins
     losses
@@ -11,7 +12,9 @@ query GetStandings($season: Int) {
     goalsFor
     goalsAgainst
     divisionName
+    divisionRank
     conferenceName
+    conferenceRank
     streakCode
     streakCount
   }

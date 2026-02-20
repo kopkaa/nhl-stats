@@ -1,10 +1,13 @@
 import {
   pgTable,
+  pgEnum,
   integer,
   varchar,
   timestamp,
   primaryKey,
 } from 'drizzle-orm/pg-core';
+
+export const streakCodeEnum = pgEnum('streak_code', ['W', 'L', 'OT']);
 
 export const teams = pgTable('teams', {
   id: integer('id').primaryKey(),
@@ -26,7 +29,7 @@ export const standings = pgTable(
     teamId: integer('team_id')
       .references(() => teams.id)
       .notNull(),
-    season: integer('season').notNull(),
+    season: varchar('season', { length: 7 }).notNull(),
     gamesPlayed: integer('games_played').notNull().default(0),
     wins: integer('wins').notNull().default(0),
     losses: integer('losses').notNull().default(0),
@@ -38,7 +41,7 @@ export const standings = pgTable(
     divisionRank: integer('division_rank'),
     conferenceName: varchar('conference_name', { length: 50 }),
     conferenceRank: integer('conference_rank'),
-    streakCode: varchar('streak_code', { length: 10 }),
+    streakCode: streakCodeEnum('streak_code'),
     streakCount: integer('streak_count'),
     updatedAt: timestamp('updated_at', { withTimezone: true })
       .defaultNow()

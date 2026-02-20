@@ -12,7 +12,7 @@ export class StandingsResolver {
 
   @Query(() => [Standing])
   standings(
-    @Args('season', { type: () => Int, nullable: true }) season?: number,
+    @Args('season', { type: () => String, nullable: true }) season?: string,
   ) {
     return this.standingsService.findAll(season);
   }

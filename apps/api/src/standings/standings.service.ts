@@ -3,7 +3,7 @@ import { desc, eq, type SQL } from 'drizzle-orm';
 import { CacheService } from '../cache';
 import { DatabaseService } from '../database';
 import { standings, teams } from '../database/schema';
-import { Standing } from './standing.model';
+import { Standing, Conference, Division, StreakCode } from './standing.model';
 
 const CACHE_TTL = 43200; // 12 hours
 
@@ -36,7 +36,7 @@ export class StandingsService {
     private readonly cacheService: CacheService,
   ) {}
 
-  async findAll(season?: number): Promise<Standing[]> {
+  async findAll(season?: string): Promise<Standing[]> {
     const cacheKey = season ? `standings:${season}` : 'standings:current';
     return this.cacheService.getOrSet(
       cacheKey,
@@ -45,7 +45,7 @@ export class StandingsService {
     );
   }
 
-  private async fetchFromDb(season?: number): Promise<Standing[]> {
+  private async fetchFromDb(season?: string): Promise<Standing[]> {
     const where: SQL | undefined = season
       ? eq(standings.season, season)
       : undefined;
@@ -66,11 +66,11 @@ export class StandingsService {
     return rows.map((row) => ({
       ...row,
       teamLogo: row.teamLogo ?? undefined,
-      divisionName: row.divisionName ?? undefined,
+      divisionName: (row.divisionName ?? undefined) as Division | undefined,
       divisionRank: row.divisionRank ?? undefined,
-      conferenceName: row.conferenceName ?? undefined,
+      conferenceName: (row.conferenceName ?? undefined) as Conference | undefined,
       conferenceRank: row.conferenceRank ?? undefined,
-      streakCode: row.streakCode ?? undefined,
+      streakCode: (row.streakCode ?? undefined) as StreakCode | undefined,
       streakCount: row.streakCount ?? undefined,
     }));
   }

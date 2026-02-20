@@ -1,4 +1,11 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, registerEnumType } from '@nestjs/graphql';
+import { Conference, Division, StreakCode } from '@nhl-app/enums';
+
+registerEnumType(Conference, { name: 'Conference' });
+registerEnumType(Division, { name: 'Division' });
+registerEnumType(StreakCode, { name: 'StreakCode' });
+
+export { Conference, Division, StreakCode };
 
 @ObjectType()
 export class Standing {
@@ -11,8 +18,8 @@ export class Standing {
   @Field({ nullable: true })
   teamLogo?: string;
 
-  @Field(() => Int)
-  season!: number;
+  @Field()
+  season!: string;
 
   @Field(() => Int)
   gamesPlayed!: number;
@@ -35,20 +42,20 @@ export class Standing {
   @Field(() => Int)
   goalsAgainst!: number;
 
-  @Field({ nullable: true })
-  divisionName?: string;
+  @Field(() => Division, { nullable: true })
+  divisionName?: Division;
 
   @Field(() => Int, { nullable: true })
   divisionRank?: number;
 
-  @Field({ nullable: true })
-  conferenceName?: string;
+  @Field(() => Conference, { nullable: true })
+  conferenceName?: Conference;
 
   @Field(() => Int, { nullable: true })
   conferenceRank?: number;
 
-  @Field({ nullable: true })
-  streakCode?: string;
+  @Field(() => StreakCode, { nullable: true })
+  streakCode?: StreakCode;
 
   @Field(() => Int, { nullable: true })
   streakCount?: number;

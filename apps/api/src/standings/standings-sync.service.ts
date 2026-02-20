@@ -5,6 +5,12 @@ import { firstValueFrom } from 'rxjs';
 import { CacheService } from '../cache';
 import { DatabaseService, standings, teams } from '../database';
 import { NhlStandingsApiResponse } from './standings.types';
+import { StreakCode } from '@nhl-app/enums';
+
+function formatSeason(seasonId: number): string {
+  const s = seasonId.toString();
+  return `${s.slice(0, 4)}-${s.slice(6)}`;
+}
 
 const STANDINGS_API_URL = 'https://api-web.nhle.com/v1/standings/now';
 
@@ -42,7 +48,7 @@ export class StandingsSyncService {
         }
         return {
           teamId,
-          season: entry.seasonId,
+          season: formatSeason(entry.seasonId),
           gamesPlayed: entry.gamesPlayed,
           wins: entry.wins,
           losses: entry.losses,
@@ -54,7 +60,7 @@ export class StandingsSyncService {
           divisionRank: entry.divisionSequence,
           conferenceName: entry.conferenceName,
           conferenceRank: entry.conferenceSequence,
-          streakCode: entry.streakCode,
+          streakCode: entry.streakCode as StreakCode,
           streakCount: entry.streakCount,
           updatedAt: new Date(),
         };

@@ -14,7 +14,7 @@ type Standing {
   teamId: Int!
   teamName: String!
   teamLogo: String
-  season: Int!
+  season: String!
   gamesPlayed: Int!
   wins: Int!
   losses: Int!
@@ -22,18 +22,36 @@ type Standing {
   points: Int!
   goalsFor: Int!
   goalsAgainst: Int!
-  divisionName: String
+  divisionName: Division
   divisionRank: Int
-  conferenceName: String
+  conferenceName: Conference
   conferenceRank: Int
-  streakCode: String
+  streakCode: StreakCode
   streakCount: Int
+}
+
+enum Division {
+  Atlantic
+  Metropolitan
+  Central
+  Pacific
+}
+
+enum Conference {
+  Eastern
+  Western
+}
+
+enum StreakCode {
+  W
+  L
+  OT
 }
 
 type Query {
   teams: [Team!]!
   team(id: Int!): Team
-  standings(season: Int): [Standing!]!
+  standings(season: String): [Standing!]!
 }
 
 type Mutation {

@@ -18,8 +18,8 @@ const props = defineProps<{
 const sortField = ref('points');
 const sortOrder = ref<1 | -1>(-1);
 
-// Track sorted order to compute cutoff row correctly
 const sortedTeams = ref<StandingRow[]>([]);
+watch(() => props.teams, (teams) => { sortedTeams.value = [...teams]; }, { immediate: true });
 
 function onSort(e: { sortField?: string | ((item: unknown) => string); sortOrder?: 0 | 1 | -1 | null }) {
   if (typeof e.sortField === 'string') sortField.value = e.sortField;
@@ -28,28 +28,17 @@ function onSort(e: { sortField?: string | ((item: unknown) => string); sortOrder
 
 function rowClass(data: StandingRow) {
   if (!props.playoffCutoff) return '';
-  const idx = sortedTeams.value.indexOf(data);
-  return idx === props.playoffCutoff - 1 ? 'playoff-cutoff' : '';
+  return sortedTeams.value.indexOf(data) === props.playoffCutoff - 1 ? 'playoff-cutoff' : '';
 }
 
-// Keep sortedTeams in sync after DataTable sorts
-watch(
-  () => props.teams,
-  (teams) => { sortedTeams.value = [...teams]; },
-  { immediate: true },
-);
+const streakColors: Record<string, string> = {
+  W: 'text-green-400 font-medium',
+  L: 'text-red-400 font-medium',
+  OT: 'text-yellow-400 font-medium',
+};
 
-function streakClass(streak: string) {
-  if (streak.startsWith('W')) return 'text-green-400 font-medium';
-  if (streak.startsWith('L')) return 'text-red-400 font-medium';
-  return 'text-yellow-400 font-medium';
-}
-
-function diffClass(diff: number) {
-  if (diff > 0) return 'text-green-400';
-  if (diff < 0) return 'text-red-400';
-  return 'text-gray-500';
-}
+const streakClass = (streak: string) => streakColors[streak[0]] ?? 'text-gray-400';
+const diffClass = (diff: number) => diff > 0 ? 'text-green-400' : diff < 0 ? 'text-red-400' : 'text-gray-500';
 </script>
 
 <template>

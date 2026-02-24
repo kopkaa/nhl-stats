@@ -6,7 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import { CacheService } from '../cache';
 import { DatabaseService, teams, games } from '../database';
 import { GameState, formatSeason } from '@nhl-app/shared';
-import { NhlClubScheduleResponse } from './games.types';
+import { NhlClubScheduleResponse, NhlScheduleGame } from './games.types';
 
 @Injectable()
 export class GamesSyncService {
@@ -36,41 +36,39 @@ export class GamesSyncService {
       dbTeams.map((t) => this.fetchTeamSchedule(t.triCode)),
     );
 
-    const seen = new Set<number>();
-    const allRows: any[] = [];
-
     results.forEach((r, i) => {
-      if (r.status === 'rejected') {
+      if (r.status === 'rejected')
         this.logger.warn(
           `Failed to sync games for ${dbTeams[i].triCode}: ${r.reason}`,
         );
-        return;
-      }
-      for (const game of r.value) {
-        if (seen.has(game.id)) continue;
-        if (
-          !teamIdSet.has(game.homeTeam.id) ||
-          !teamIdSet.has(game.awayTeam.id)
-        )
-          continue;
-
-        seen.add(game.id);
-        allRows.push({
-          id: game.id,
-          season: formatSeason(game.season),
-          gameType: game.gameType,
-          gameDate: game.gameDate,
-          startTimeUTC: game.startTimeUTC,
-          gameState: game.gameState as GameState,
-          venue: game.venue?.default,
-          homeTeamId: game.homeTeam.id,
-          awayTeamId: game.awayTeam.id,
-          homeScore: game.homeTeam.score ?? null,
-          awayScore: game.awayTeam.score ?? null,
-          updatedAt: new Date(),
-        });
-      }
     });
+
+    const allGames = results
+      .filter(
+        (r): r is PromiseFulfilledResult<NhlScheduleGame[]> =>
+          r.status === 'fulfilled',
+      )
+      .flatMap((r) => r.value)
+      .filter(
+        (g) => teamIdSet.has(g.homeTeam.id) && teamIdSet.has(g.awayTeam.id),
+      );
+
+    const unique = new Map(allGames.map((g) => [g.id, g]));
+
+    const allRows = [...unique.values()].map((game) => ({
+      id: game.id,
+      season: formatSeason(game.season),
+      gameType: game.gameType,
+      gameDate: game.gameDate,
+      startTimeUTC: game.startTimeUTC,
+      gameState: game.gameState as GameState,
+      venue: game.venue?.default,
+      homeTeamId: game.homeTeam.id,
+      awayTeamId: game.awayTeam.id,
+      homeScore: game.homeTeam.score ?? null,
+      awayScore: game.awayTeam.score ?? null,
+      updatedAt: new Date(),
+    }));
 
     if (allRows.length === 0) {
       this.logger.warn('No games data to sync.');

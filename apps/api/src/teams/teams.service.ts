@@ -23,7 +23,7 @@ export class TeamsService {
     private readonly cacheService: CacheService,
   ) {
     this.statsApiBaseUrl =
-      this.configService.getOrThrow<string>('NHL_API_BASE_URL');
+      this.configService.getOrThrow<string>('NHL_STATS_API_URL');
   }
 
   async findAll(): Promise<Team[]> {

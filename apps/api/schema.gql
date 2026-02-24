@@ -48,10 +48,105 @@ enum StreakCode {
   OT
 }
 
+type Player {
+  id: Int!
+  teamId: Int!
+  firstName: String!
+  lastName: String!
+  positionCode: PositionCode!
+  sweaterNumber: Int
+  headshot: String
+  shootsCatches: String
+  heightCm: Int
+  weightKg: Int
+  birthDate: String
+  birthCountry: String
+}
+
+enum PositionCode {
+  C
+  L
+  R
+  D
+  G
+}
+
+type SkaterSeasonStats {
+  playerId: Int!
+  season: String!
+  firstName: String!
+  lastName: String!
+  headshot: String
+  positionCode: PositionCode!
+  gamesPlayed: Int!
+  goals: Int!
+  assists: Int!
+  points: Int!
+  plusMinus: Int!
+  penaltyMinutes: Int!
+  powerPlayGoals: Int!
+  shorthandedGoals: Int!
+  gameWinningGoals: Int!
+  shots: Int!
+  shootingPctg: Float
+  avgTimeOnIce: Float
+  faceoffWinPctg: Float
+}
+
+type GoalieSeasonStats {
+  playerId: Int!
+  season: String!
+  firstName: String!
+  lastName: String!
+  headshot: String
+  gamesPlayed: Int!
+  gamesStarted: Int!
+  wins: Int!
+  losses: Int!
+  otLosses: Int!
+  goalsAgainstAvg: Float
+  savePctg: Float
+  shutouts: Int!
+  shotsAgainst: Int!
+  saves: Int!
+  goalsAgainst: Int!
+}
+
+type Game {
+  id: Int!
+  season: String!
+  gameType: Int!
+  gameDate: String!
+  startTimeUTC: String
+  gameState: GameState!
+  venue: String
+  homeTeamId: Int!
+  awayTeamId: Int!
+  homeTeamName: String
+  homeTeamLogo: String
+  awayTeamName: String
+  awayTeamLogo: String
+  homeScore: Int
+  awayScore: Int
+}
+
+enum GameState {
+  FUT
+  PRE
+  LIVE
+  FINAL
+  OFF
+  CRIT
+}
+
 type Query {
   teams: [Team!]!
   team(id: Int!): Team
   standings(season: String): [Standing!]!
+  teamRoster(teamId: Int!): [Player!]!
+  teamSkaterStats(teamId: Int!): [SkaterSeasonStats!]!
+  teamGoalieStats(teamId: Int!): [GoalieSeasonStats!]!
+  teamGames(teamId: Int!, limit: Int = 50): [Game!]!
 }
 
 type Mutation {
@@ -60,4 +155,10 @@ type Mutation {
 
   """Sync standings from NHL API to database"""
   syncStandings: Int!
+
+  """Sync all team rosters and player stats from NHL API"""
+  syncRosters: Int!
+
+  """Sync all team schedules from NHL API"""
+  syncGames: Int!
 }

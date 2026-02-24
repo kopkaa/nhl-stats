@@ -14,7 +14,7 @@
     "outDir": "./dist",
     "baseUrl": "./",
     "paths": {
-      "@nhl-app/enums": ["../../libs/nhl-enums/src/index.ts"]
+      "@nhl-app/shared": ["../../libs/shared/src/index.ts"]
     },
     "incremental": true,
     "skipLibCheck": true,
@@ -25,5 +25,5 @@
     "noFallthroughCasesInSwitch": false,
     "ignoreDeprecations": "5.0"
   },
-  "include": ["src/**/*", "../../libs/nhl-enums/src/**/*"]
+  "include": ["src/**/*", "../../libs/shared/src/**/*"]
 }

@@ -1,5 +1,5 @@
 {
-  "name": "@nhl-app/enums",
+  "name": "@nhl-app/shared",
   "version": "1.0.0",
   "exports": {
     ".": "./src/index.ts"

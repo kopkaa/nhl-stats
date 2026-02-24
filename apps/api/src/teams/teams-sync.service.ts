@@ -18,7 +18,7 @@ export class TeamsSyncService {
     private readonly databaseService: DatabaseService,
   ) {
     this.statsApiBaseUrl =
-      this.configService.getOrThrow<string>('NHL_API_BASE_URL');
+      this.configService.getOrThrow<string>('NHL_STATS_API_URL');
   }
 
   async syncTeams(): Promise<number> {

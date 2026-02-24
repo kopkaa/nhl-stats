@@ -164,7 +164,6 @@ const diffClass = (diff: number) => diff > 0 ? 'text-green-400' : diff < 0 ? 'te
   width: 100%;
 }
 
-/* all numeric columns: narrow */
 .standings-dt :deep(th),
 .standings-dt :deep(td) {
   overflow: hidden;
@@ -176,28 +175,25 @@ const diffClass = (diff: number) => diff > 0 ? 'text-green-400' : diff < 0 ? 'te
   border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   color: rgb(107 114 128);
-  font-size: 0.6rem;
+  font-size: 0.65rem;
   font-weight: 500;
   text-transform: uppercase;
   letter-spacing: 0.03em;
-  padding: 0.35rem 0.25rem;
+  padding: 0.4rem 0.3rem;
   text-align: center;
 }
 
-/* team name column: left-aligned, wider */
 .standings-dt :deep(.p-datatable-thead > tr > th:nth-child(2)) {
   text-align: left;
   width: 35%;
 }
 
-/* sort icon: tiny */
 .standings-dt :deep(.p-datatable-sort-icon) {
-  width: 0.55rem !important;
-  height: 0.55rem !important;
+  width: 0.6rem !important;
+  height: 0.6rem !important;
   margin-left: 2px;
 }
 
-/* header flex: compact */
 .standings-dt :deep(.p-datatable-column-header-content) {
   display: flex;
   align-items: center;
@@ -235,9 +231,9 @@ const diffClass = (diff: number) => diff > 0 ? 'text-green-400' : diff < 0 ? 'te
 
 .standings-dt :deep(.p-datatable-tbody > tr > td) {
   border: none;
-  padding: 0.35rem 0.25rem;
+  padding: 0.4rem 0.3rem;
   color: rgb(156 163 175);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
   text-align: center;
 }
@@ -249,4 +245,5 @@ const diffClass = (diff: number) => diff > 0 ? 'text-green-400' : diff < 0 ? 'te
 .standings-dt :deep(.p-datatable-tbody > tr.playoff-cutoff) {
   border-bottom: 1px solid rgba(239, 68, 68, 0.45);
 }
+
 </style>

@@ -1,34 +1,35 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { ConfigService } from '@nestjs/config';
 import { sql } from 'drizzle-orm';
 import { firstValueFrom } from 'rxjs';
 import { CacheService } from '../cache';
 import { DatabaseService, standings, teams } from '../database';
 import { NhlStandingsApiResponse } from './standings.types';
-import { StreakCode } from '@nhl-app/enums';
-
-function formatSeason(seasonId: number): string {
-  const s = seasonId.toString();
-  return `${s.slice(0, 4)}-${s.slice(6)}`;
-}
-
-const STANDINGS_API_URL = 'https://api-web.nhle.com/v1/standings/now';
+import { StreakCode, formatSeason } from '@nhl-app/shared';
 
 @Injectable()
 export class StandingsSyncService {
   private readonly logger = new Logger(StandingsSyncService.name);
+  private readonly webApiBaseUrl: string;
 
   constructor(
     private readonly httpService: HttpService,
+    private readonly configService: ConfigService,
     private readonly databaseService: DatabaseService,
     private readonly cacheService: CacheService,
-  ) {}
+  ) {
+    this.webApiBaseUrl =
+      this.configService.getOrThrow<string>('NHL_WEB_API_URL');
+  }
 
   async syncStandings(): Promise<number> {
     this.logger.log('Starting standings sync from NHL API...');
 
     const { data } = await firstValueFrom(
-      this.httpService.get<NhlStandingsApiResponse>(STANDINGS_API_URL),
+      this.httpService.get<NhlStandingsApiResponse>(
+        `${this.webApiBaseUrl}/standings/now`,
+      ),
     );
 
     const dbTeams = await this.databaseService.db

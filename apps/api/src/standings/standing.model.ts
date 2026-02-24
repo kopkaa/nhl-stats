@@ -1,5 +1,5 @@
 import { ObjectType, Field, Int, registerEnumType } from '@nestjs/graphql';
-import { Conference, Division, StreakCode } from '@nhl-app/enums';
+import { Conference, Division, StreakCode } from '@nhl-app/shared';
 
 registerEnumType(Conference, { name: 'Conference' });
 registerEnumType(Division, { name: 'Division' });

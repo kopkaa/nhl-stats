@@ -53,7 +53,7 @@ export class GamesSyncService {
         (g) => teamIdSet.has(g.homeTeam.id) && teamIdSet.has(g.awayTeam.id),
       );
 
-    const unique = new Map(allGames.map((g) => [g.id, g]));
+    const unique = new Map(allGames.map((game) => [game.id, game]));
 
     const allRows = [...unique.values()].map((game) => ({
       id: game.id,

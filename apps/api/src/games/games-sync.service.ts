@@ -30,16 +30,16 @@ export class GamesSyncService {
       .select({ id: teams.id, triCode: teams.triCode })
       .from(teams);
 
-    const teamIdSet = new Set(dbTeams.map((t) => t.id));
+    const teamIdSet = new Set(dbTeams.map((team) => team.id));
 
     const results = await Promise.allSettled(
-      dbTeams.map((t) => this.fetchTeamSchedule(t.triCode)),
+      dbTeams.map((team) => this.fetchTeamSchedule(team.triCode)),
     );
 
-    results.forEach((r, i) => {
-      if (r.status === 'rejected')
+    results.forEach((result, index) => {
+      if (result.status === 'rejected')
         this.logger.warn(
-          `Failed to sync games for ${dbTeams[i].triCode}: ${r.reason}`,
+          `Failed to sync games for ${dbTeams[index].triCode}: ${result.reason}`,
         );
     });
 

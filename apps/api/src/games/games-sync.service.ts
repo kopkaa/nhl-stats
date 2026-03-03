@@ -45,12 +45,12 @@ export class GamesSyncService {
 
     const allGames = results
       .filter(
-        (r): r is PromiseFulfilledResult<NhlScheduleGame[]> =>
-          r.status === 'fulfilled',
+        (result): result is PromiseFulfilledResult<NhlScheduleGame[]> =>
+          result.status === 'fulfilled',
       )
-      .flatMap((r) => r.value)
+      .flatMap((result) => result.value)
       .filter(
-        (g) => teamIdSet.has(g.homeTeam.id) && teamIdSet.has(g.awayTeam.id),
+        (game) => teamIdSet.has(game.homeTeam.id) && teamIdSet.has(game.awayTeam.id),
       );
 
     const unique = new Map(allGames.map((game) => [game.id, game]));

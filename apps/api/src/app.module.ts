@@ -4,6 +4,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { GraphQLModule } from '@nestjs/graphql';
 import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
 import { CacheModule } from './cache';
+import { CommonModule } from './common';
 import { DatabaseModule } from './database';
 import { HealthModule } from './health';
 import { TeamsModule } from './teams/teams.module';
@@ -19,6 +20,7 @@ import { GamesModule } from './games/games.module';
       driver: ApolloDriver,
       autoSchemaFile: 'schema.gql',
     }),
+    CommonModule,
     DatabaseModule,
     CacheModule,
     HealthModule,

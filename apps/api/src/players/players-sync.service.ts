@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
 import { sql } from 'drizzle-orm';
-import { firstValueFrom } from 'rxjs';
+import { NhlApiClient } from '../common';
 import { CacheService } from '../cache';
 import {
   DatabaseService,
@@ -21,17 +19,12 @@ import {
 @Injectable()
 export class PlayersSyncService {
   private readonly logger = new Logger(PlayersSyncService.name);
-  private readonly webApiBaseUrl: string;
 
   constructor(
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
+    private readonly nhlApi: NhlApiClient,
     private readonly databaseService: DatabaseService,
     private readonly cacheService: CacheService,
-  ) {
-    this.webApiBaseUrl =
-      this.configService.getOrThrow<string>('NHL_WEB_API_URL');
-  }
+  ) {}
 
   async syncRosters(): Promise<number> {
     this.logger.log('Starting roster sync from NHL API...');
@@ -72,10 +65,8 @@ export class PlayersSyncService {
     teamId: number,
     triCode: string,
   ): Promise<number> {
-    const { data } = await firstValueFrom(
-      this.httpService.get<NhlRosterResponse>(
-        `${this.webApiBaseUrl}/roster/${triCode}/current`,
-      ),
+    const data = await this.nhlApi.getWeb<NhlRosterResponse>(
+      `/roster/${triCode}/current`,
     );
 
     const allPlayers: NhlRosterPlayer[] = [
@@ -127,10 +118,8 @@ export class PlayersSyncService {
   }
 
   private async syncTeamStats(triCode: string): Promise<void> {
-    const { data } = await firstValueFrom(
-      this.httpService.get<NhlClubStatsResponse>(
-        `${this.webApiBaseUrl}/club-stats/${triCode}/now`,
-      ),
+    const data = await this.nhlApi.getWeb<NhlClubStatsResponse>(
+      `/club-stats/${triCode}/now`,
     );
 
     const season = formatSeason(data.season);

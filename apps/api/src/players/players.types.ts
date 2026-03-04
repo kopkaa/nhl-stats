@@ -1,6 +1,4 @@
-interface NhlLocalizedString {
-  default: string;
-}
+import { NhlLocalizedString } from '../common';
 
 export interface NhlRosterPlayer {
   id: number;

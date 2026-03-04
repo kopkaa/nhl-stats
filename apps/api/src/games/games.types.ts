@@ -1,6 +1,4 @@
-interface NhlLocalizedString {
-  default: string;
-}
+import { NhlLocalizedString } from '../common';
 
 interface NhlScheduleTeam {
   id: number;

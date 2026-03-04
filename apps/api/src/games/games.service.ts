@@ -22,7 +22,7 @@ export class GamesService {
     return this.cacheService.getOrSet(
       `games:team:${teamId}:${limit}`,
       () => this.fetchTeamGames(teamId, limit),
-      CACHE_TTL,
+      CACHE_TTL.GAMES,
     );
   }
 

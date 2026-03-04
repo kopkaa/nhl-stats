@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
 import { sql } from 'drizzle-orm';
-import { firstValueFrom } from 'rxjs';
+import { NhlApiClient } from '../common';
 import { DatabaseService, teams } from '../database';
 import { HISTORIC_TEAM_IDS } from './teams.constants';
 import type { NhlTeamsApiResponse } from './teams.types';
@@ -10,23 +8,16 @@ import type { NhlTeamsApiResponse } from './teams.types';
 @Injectable()
 export class TeamsSyncService {
   private readonly logger = new Logger(TeamsSyncService.name);
-  private readonly statsApiBaseUrl: string;
 
   constructor(
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
+    private readonly nhlApi: NhlApiClient,
     private readonly databaseService: DatabaseService,
-  ) {
-    this.statsApiBaseUrl =
-      this.configService.getOrThrow<string>('NHL_STATS_API_URL');
-  }
+  ) {}
 
   async syncTeams(): Promise<number> {
     this.logger.log('Starting teams sync from NHL API...');
 
-    const { data } = await firstValueFrom(
-      this.httpService.get<NhlTeamsApiResponse>(`${this.statsApiBaseUrl}/team`),
-    );
+    const data = await this.nhlApi.getStats<NhlTeamsApiResponse>('/team');
 
     const activeTeams = data.data
       .filter((team) => team.franchiseId !== null)

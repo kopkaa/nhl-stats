@@ -1,11 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { eq } from 'drizzle-orm';
+import { CACHE_TTL } from '../common';
 import { CacheService } from '../cache';
 import { DatabaseService, players, skaterSeasonStats, goalieSeasonStats } from '../database';
 import { Player, SkaterSeasonStats, GoalieSeasonStats } from './player.model';
 import { PositionCode } from '@nhl-app/shared';
-
-const CACHE_TTL = 43200; // 12 hours
 
 @Injectable()
 export class PlayersService {
@@ -20,7 +19,7 @@ export class PlayersService {
     return this.cacheService.getOrSet(
       `players:roster:${teamId}`,
       () => this.fetchRoster(teamId),
-      CACHE_TTL,
+      CACHE_TTL.PLAYERS,
     );
   }
 
@@ -28,7 +27,7 @@ export class PlayersService {
     return this.cacheService.getOrSet(
       `players:skaters:${teamId}`,
       () => this.fetchSkaterStats(teamId),
-      CACHE_TTL,
+      CACHE_TTL.PLAYERS,
     );
   }
 
@@ -36,7 +35,7 @@ export class PlayersService {
     return this.cacheService.getOrSet(
       `players:goalies:${teamId}`,
       () => this.fetchGoalieStats(teamId),
-      CACHE_TTL,
+      CACHE_TTL.PLAYERS,
     );
   }
 

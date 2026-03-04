@@ -1,12 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { desc, eq, or } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/pg-core';
+import { CACHE_TTL } from '../common';
 import { CacheService } from '../cache';
 import { DatabaseService, games, teams } from '../database';
 import { Game } from './game.model';
 import { GameState } from '@nhl-app/shared';
-
-const CACHE_TTL = 3600; // 1 hour
 
 const awayTeamRef = alias(teams, 'away_team');
 

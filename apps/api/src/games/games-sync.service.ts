@@ -1,8 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
 import { sql } from 'drizzle-orm';
-import { firstValueFrom } from 'rxjs';
+import { NhlApiClient } from '../common';
 import { CacheService } from '../cache';
 import { DatabaseService, teams, games } from '../database';
 import { GameState, formatSeason } from '@nhl-app/shared';
@@ -11,17 +9,12 @@ import { NhlClubScheduleResponse, NhlScheduleGame } from './games.types';
 @Injectable()
 export class GamesSyncService {
   private readonly logger = new Logger(GamesSyncService.name);
-  private readonly webApiBaseUrl: string;
 
   constructor(
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
+    private readonly nhlApi: NhlApiClient,
     private readonly databaseService: DatabaseService,
     private readonly cacheService: CacheService,
-  ) {
-    this.webApiBaseUrl =
-      this.configService.getOrThrow<string>('NHL_WEB_API_URL');
-  }
+  ) {}
 
   async syncGames(): Promise<number> {
     this.logger.log('Starting games sync from NHL API...');
@@ -50,7 +43,8 @@ export class GamesSyncService {
       )
       .flatMap((result) => result.value)
       .filter(
-        (game) => teamIdSet.has(game.homeTeam.id) && teamIdSet.has(game.awayTeam.id),
+        (game) =>
+          teamIdSet.has(game.homeTeam.id) && teamIdSet.has(game.awayTeam.id),
       );
 
     const unique = new Map(allGames.map((game) => [game.id, game]));
@@ -99,11 +93,9 @@ export class GamesSyncService {
     return allRows.length;
   }
 
-  private async fetchTeamSchedule(triCode: string) {
-    const { data } = await firstValueFrom(
-      this.httpService.get<NhlClubScheduleResponse>(
-        `${this.webApiBaseUrl}/club-schedule-season/${triCode}/now`,
-      ),
+  private async fetchTeamSchedule(triCode: string): Promise<NhlScheduleGame[]> {
+    const data = await this.nhlApi.getWeb<NhlClubScheduleResponse>(
+      `/club-schedule-season/${triCode}/now`,
     );
     return data.games;
   }

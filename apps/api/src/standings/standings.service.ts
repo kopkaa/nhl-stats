@@ -1,11 +1,10 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { desc, eq, type SQL } from 'drizzle-orm';
+import { CACHE_TTL } from '../common';
 import { CacheService } from '../cache';
 import { DatabaseService } from '../database';
 import { standings, teams } from '../database/schema';
 import { Standing, Conference, Division, StreakCode } from './standing.model';
-
-const CACHE_TTL = 43200; // 12 hours
 
 const selectFields = {
   teamId: standings.teamId,
@@ -41,7 +40,7 @@ export class StandingsService {
     return this.cacheService.getOrSet(
       cacheKey,
       () => this.fetchFromDb(season),
-      CACHE_TTL,
+      CACHE_TTL.STANDINGS,
     );
   }
 

@@ -1,36 +1,27 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { HttpService } from '@nestjs/axios';
-import { ConfigService } from '@nestjs/config';
 import { eq } from 'drizzle-orm';
-import { firstValueFrom } from 'rxjs';
+import { NhlApiClient, CACHE_TTL } from '../common';
 import { CacheService } from '../cache';
 import { DatabaseService, teams } from '../database';
 import { Team } from './team.model';
 import { HISTORIC_TEAM_IDS } from './teams.constants';
 import type { NhlTeamResponse, NhlTeamsApiResponse } from './teams.types';
 
-const CACHE_TTL = 86400; // 24 hours
-
 @Injectable()
 export class TeamsService {
   private readonly logger = new Logger(TeamsService.name);
-  private readonly statsApiBaseUrl: string;
 
   constructor(
-    private readonly httpService: HttpService,
-    private readonly configService: ConfigService,
+    private readonly nhlApi: NhlApiClient,
     private readonly databaseService: DatabaseService,
     private readonly cacheService: CacheService,
-  ) {
-    this.statsApiBaseUrl =
-      this.configService.getOrThrow<string>('NHL_STATS_API_URL');
-  }
+  ) {}
 
   async findAll(): Promise<Team[]> {
     return this.cacheService.getOrSet(
       'teams:all',
       () => this.fetchAllFromDb(),
-      CACHE_TTL,
+      CACHE_TTL.TEAMS,
     );
   }
 
@@ -38,7 +29,7 @@ export class TeamsService {
     const result = await this.cacheService.getOrSet(
       `teams:${id}`,
       () => this.fetchOneFromDb(id),
-      CACHE_TTL,
+      CACHE_TTL.TEAMS,
     );
     return result ?? undefined;
   }
@@ -91,9 +82,7 @@ export class TeamsService {
   }
 
   private async fetchFromApi(): Promise<Team[]> {
-    const { data } = await firstValueFrom(
-      this.httpService.get<NhlTeamsApiResponse>(`${this.statsApiBaseUrl}/team`),
-    );
+    const data = await this.nhlApi.getStats<NhlTeamsApiResponse>('/team');
 
     return data.data
       .filter((team) => team.franchiseId !== null)

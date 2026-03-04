@@ -12,8 +12,7 @@ export class NhlApiClient {
     private readonly httpService: HttpService,
     private readonly configService: ConfigService,
   ) {
-    this.webApiUrl =
-      this.configService.getOrThrow<string>('NHL_WEB_API_URL');
+    this.webApiUrl = this.configService.getOrThrow<string>('NHL_WEB_API_URL');
     this.statsApiUrl =
       this.configService.getOrThrow<string>('NHL_STATS_API_URL');
   }

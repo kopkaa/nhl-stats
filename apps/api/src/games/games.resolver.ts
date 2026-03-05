@@ -13,9 +13,17 @@ export class GamesResolver {
   @Query(() => [Game])
   teamGames(
     @Args('teamId', { type: () => Int }) teamId: number,
-    @Args('limit', { type: () => Int, nullable: true, defaultValue: 50 }) limit: number,
+    @Args('limit', { type: () => Int, nullable: true, defaultValue: 50 })
+    limit: number,
   ) {
     return this.gamesService.teamGames(teamId, limit);
+  }
+
+  @Query(() => [Game])
+  gamesByDate(
+    @Args('date', { description: 'YYYY-MM-DD' }) date: string,
+  ) {
+    return this.gamesService.gamesByDate(date);
   }
 
   @Mutation(() => Int, {

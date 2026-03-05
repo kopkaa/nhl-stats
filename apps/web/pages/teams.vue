@@ -112,25 +112,15 @@ const filteredTeams = computed(() => {
       <div
         class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
       >
-        <div
+        <TeamCard
           v-for="team in filteredTeams"
           :key="team.id"
-          class="flex flex-col items-center gap-3 p-6 rounded-xl border border-gray-800 bg-gray-900 transition-all hover:border-gray-600 cursor-pointer"
-        >
-          <img
-            v-if="team.logo"
-            :src="team.logo"
-            :alt="team.fullName"
-            class="w-20 h-20 object-contain"
-          />
-          <div class="text-center">
-            <div class="font-semibold">{{ team.fullName }}</div>
-            <div class="text-sm text-gray-400">{{ team.triCode }}</div>
-            <div v-if="team.divisionName" class="text-xs text-gray-600 mt-0.5">
-              {{ team.divisionName }}
-            </div>
-          </div>
-        </div>
+          :id="team.id"
+          :full-name="team.fullName"
+          :tri-code="team.triCode"
+          :logo="team.logo"
+          :division-name="team.divisionName"
+        />
       </div>
 
       <div v-if="filteredTeams.length === 0" class="py-16 text-center text-gray-500 text-sm">

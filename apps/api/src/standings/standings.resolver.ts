@@ -10,9 +10,16 @@ export class StandingsResolver {
     private readonly standingsSyncService: StandingsSyncService,
   ) {}
 
-  @Query(() => [Standing])
+  @Query(() => [Standing], {
+    description: 'League standings, optionally filtered by season',
+  })
   standings(
-    @Args('season', { type: () => String, nullable: true }) season?: string,
+    @Args('season', {
+      type: () => String,
+      nullable: true,
+      description: 'Season in format YYYY-YY (e.g. 2025-26)',
+    })
+    season?: string,
   ) {
     return this.standingsService.findAll(season);
   }

@@ -10,17 +10,21 @@ export class PlayersResolver {
     private readonly playersSyncService: PlayersSyncService,
   ) {}
 
-  @Query(() => [Player])
+  @Query(() => [Player], { description: 'Team roster (all players)' })
   teamRoster(@Args('teamId', { type: () => Int }) teamId: number) {
     return this.playersService.teamRoster(teamId);
   }
 
-  @Query(() => [SkaterSeasonStats])
+  @Query(() => [SkaterSeasonStats], {
+    description: 'Current season stats for skaters on a team',
+  })
   teamSkaterStats(@Args('teamId', { type: () => Int }) teamId: number) {
     return this.playersService.teamSkaterStats(teamId);
   }
 
-  @Query(() => [GoalieSeasonStats])
+  @Query(() => [GoalieSeasonStats], {
+    description: 'Current season stats for goalies on a team',
+  })
   teamGoalieStats(@Args('teamId', { type: () => Int }) teamId: number) {
     return this.playersService.teamGoalieStats(teamId);
   }

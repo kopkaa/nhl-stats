@@ -10,12 +10,15 @@ export class TeamsResolver {
     private readonly teamsSyncService: TeamsSyncService,
   ) {}
 
-  @Query(() => [Team])
+  @Query(() => [Team], { description: 'All active NHL teams' })
   teams() {
     return this.teamsService.findAll();
   }
 
-  @Query(() => Team, { nullable: true })
+  @Query(() => Team, {
+    nullable: true,
+    description: 'Single team by ID',
+  })
   team(@Args('id', { type: () => Int }) id: number) {
     return this.teamsService.findOne(id);
   }

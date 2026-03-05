@@ -10,7 +10,7 @@ export class GamesResolver {
     private readonly gamesSyncService: GamesSyncService,
   ) {}
 
-  @Query(() => [Game])
+  @Query(() => [Game], { description: 'Games for a specific team' })
   teamGames(
     @Args('teamId', { type: () => Int }) teamId: number,
     @Args('limit', { type: () => Int, nullable: true, defaultValue: 50 })
@@ -19,7 +19,7 @@ export class GamesResolver {
     return this.gamesService.teamGames(teamId, limit);
   }
 
-  @Query(() => [Game])
+  @Query(() => [Game], { description: 'All games on a given date' })
   gamesByDate(
     @Args('date', { description: 'YYYY-MM-DD' }) date: string,
   ) {

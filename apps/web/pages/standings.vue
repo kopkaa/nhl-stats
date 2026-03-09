@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useGetStandingsQuery } from '~/graphql/generated';
-import { Conference, Division, PLAYOFF_SPOTS_PER_CONFERENCE } from '~/constants/nhl';
+import { Conference, Division, PLAYOFF_SPOTS_PER_CONFERENCE } from '@nhl-app/shared';
 
 const { result, loading, error } = useGetStandingsQuery({});
 

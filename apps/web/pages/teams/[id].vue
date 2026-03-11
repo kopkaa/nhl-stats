@@ -61,24 +61,6 @@ const upcomingGames = computed(() =>
     .slice(0, 10),
 );
 
-function formatHeight(cm: number | null | undefined): string {
-  if (!cm) return '—';
-  const totalInches = Math.round(cm / 2.54);
-  return `${Math.floor(totalInches / 12)}'${totalInches % 12}"`;
-}
-
-function formatToi(minutes: number | null | undefined): string {
-  if (!minutes) return '—';
-  const min = Math.floor(minutes);
-  const sec = Math.round((minutes - min) * 60);
-  return `${min}:${sec.toString().padStart(2, '0')}`;
-}
-
-function formatPctg(pctg: number | null | undefined): string {
-  if (pctg == null) return '—';
-  return (pctg * 100).toFixed(1);
-}
-
 function gameResult(game: typeof recentGames.value[number]): { text: string; class: string } {
   const isHome = game.homeTeamId === teamId.value;
   const teamScore = isHome ? game.homeScore : game.awayScore;
@@ -120,13 +102,17 @@ function formatGameDate(dateStr: string): string {
       <div class="flex items-center gap-5 mb-8">
 <img v-if="team.logo" :src="team.logo" :alt="team.fullName" class="w-16 h-16 object-contain" />
         <div>
-          <h1 class="text-2xl font-bold text-white tracking-tight leading-tight">{{ team.fullName }}</h1>
           <div class="flex items-center gap-2">
+            <h1 class="text-2xl font-bold text-white tracking-tight leading-tight">{{ team.fullName }}</h1>
             <span class="text-sm text-gray-500 font-medium">{{ team.triCode }}</span>
-            <span v-if="team.conferenceName" class="text-xs text-gray-600">&middot; {{ team.conferenceName }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span v-if="team.conferenceName" class="text-xs text-gray-600">{{ team.conferenceName }}</span>
             <span v-if="team.divisionName" class="text-xs text-gray-600">&middot; {{ team.divisionName }}</span>
           </div>
           <div v-if="standing" class="flex items-center gap-3 mt-1">
+            <span v-if="standing.divisionRank" class="text-xs text-gray-400">{{ standing.divisionRank }}{{ ordinalSuffix(standing.divisionRank) }} in {{ standing.divisionName }}</span>
+            <span v-if="standing.divisionRank" class="text-gray-700">|</span>
             <span class="text-sm text-white font-semibold tabular-nums">
               {{ standing.wins }}-{{ standing.losses }}-{{ standing.otLosses }}
             </span>

@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { sql } from 'drizzle-orm';
+import { sql, eq } from 'drizzle-orm';
 import { NhlApiClient } from '../common';
 import { CacheService } from '../cache';
 import { DatabaseService, standings, teams } from '../database';
@@ -86,7 +86,19 @@ export class StandingsSyncService {
         },
       });
 
+    for (const row of rows) {
+      await this.databaseService.db
+        .update(teams)
+        .set({
+          conferenceName: row.conferenceName,
+          divisionName: row.divisionName,
+          updatedAt: new Date(),
+        })
+        .where(eq(teams.id, row.teamId));
+    }
+
     await this.cacheService.delByPrefix('standings:');
+    await this.cacheService.delByPrefix('teams:');
     this.logger.log(`Synced standings for ${rows.length} teams.`);
     return rows.length;
   }

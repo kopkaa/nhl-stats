@@ -47,6 +47,8 @@ export class TeamsService {
         fullName: row.fullName,
         triCode: row.triCode,
         logo: row.logo ?? undefined,
+        conferenceName: row.conferenceName ?? undefined,
+        divisionName: row.divisionName ?? undefined,
       }));
     }
 
@@ -71,6 +73,8 @@ export class TeamsService {
         fullName: row.fullName,
         triCode: row.triCode,
         logo: row.logo ?? undefined,
+        conferenceName: row.conferenceName ?? undefined,
+        divisionName: row.divisionName ?? undefined,
       };
     }
 

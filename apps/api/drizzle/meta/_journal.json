@@ -29,6 +29,13 @@
       "when": 1771883512385,
       "tag": "0003_brave_iceman",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1773240297826,
+      "tag": "0004_lying_dragon_man",
+      "breakpoints": true
     }
   ]
 }

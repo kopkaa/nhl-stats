@@ -18,6 +18,8 @@ export const teams = pgTable('teams', {
   fullName: varchar('full_name', { length: 255 }).notNull(),
   triCode: varchar('tri_code', { length: 10 }).notNull(),
   logo: varchar('logo', { length: 512 }),
+  conferenceName: varchar('conference_name', { length: 50 }),
+  divisionName: varchar('division_name', { length: 50 }),
   createdAt: timestamp('created_at', { withTimezone: true })
     .defaultNow()
     .notNull(),

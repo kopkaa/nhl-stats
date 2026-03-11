@@ -1,0 +1,13 @@
+query GetTeamStanding($teamId: Int!) {
+  teamStanding(teamId: $teamId) {
+    wins
+    losses
+    otLosses
+    points
+    gamesPlayed
+    divisionRank
+    conferenceRank
+    streakCode
+    streakCount
+  }
+}

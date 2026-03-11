@@ -8,6 +8,8 @@ type Team {
   fullName: String!
   triCode: String!
   logo: String
+  conferenceName: String
+  divisionName: String
 }
 
 type Standing {
@@ -151,6 +153,9 @@ type Query {
     """Season in format YYYY-YY (e.g. 2025-26)"""
     season: String
   ): [Standing!]!
+
+  """Current standings for a single team"""
+  teamStanding(teamId: Int!): Standing
 
   """Team roster (all players)"""
   teamRoster(teamId: Int!): [Player!]!

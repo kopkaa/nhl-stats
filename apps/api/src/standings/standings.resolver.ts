@@ -24,6 +24,16 @@ export class StandingsResolver {
     return this.standingsService.findAll(season);
   }
 
+  @Query(() => Standing, {
+    nullable: true,
+    description: 'Current standings for a single team',
+  })
+  teamStanding(
+    @Args('teamId', { type: () => Int }) teamId: number,
+  ) {
+    return this.standingsService.findByTeam(teamId);
+  }
+
   @Mutation(() => Int, {
     description: 'Sync standings from NHL API to database',
   })

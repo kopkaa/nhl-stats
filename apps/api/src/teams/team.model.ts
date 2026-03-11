@@ -16,4 +16,10 @@ export class Team {
 
   @Field({ nullable: true })
   logo?: string;
+
+  @Field({ nullable: true })
+  conferenceName?: string;
+
+  @Field({ nullable: true })
+  divisionName?: string;
 }

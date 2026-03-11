@@ -44,6 +44,14 @@ export class StandingsService {
     );
   }
 
+  async findByTeam(teamId: number): Promise<Standing | undefined> {
+    return this.cacheService.getOrSet(
+      `standings:team:${teamId}`,
+      () => this.fetchOneByTeam(teamId),
+      CACHE_TTL.STANDINGS,
+    );
+  }
+
   private async fetchFromDb(season?: string): Promise<Standing[]> {
     const where: SQL | undefined = season
       ? eq(standings.season, season)
@@ -62,7 +70,23 @@ export class StandingsService {
       );
     }
 
-    return rows.map((row) => ({
+    return rows.map((row) => this.mapRow(row));
+  }
+
+  private async fetchOneByTeam(teamId: number): Promise<Standing | undefined> {
+    const rows = await this.databaseService.db
+      .select(selectFields)
+      .from(standings)
+      .innerJoin(teams, eq(standings.teamId, teams.id))
+      .where(eq(standings.teamId, teamId))
+      .orderBy(desc(standings.season))
+      .limit(1);
+
+    return rows.length > 0 ? this.mapRow(rows[0]) : undefined;
+  }
+
+  private mapRow(row: typeof selectFields extends infer T ? { [K in keyof T]: any } : never): Standing {
+    return {
       ...row,
       teamLogo: row.teamLogo ?? undefined,
       divisionName: (row.divisionName ?? undefined) as Division | undefined,
@@ -71,6 +95,6 @@ export class StandingsService {
       conferenceRank: row.conferenceRank ?? undefined,
       streakCode: (row.streakCode ?? undefined) as StreakCode | undefined,
       streakCount: row.streakCount ?? undefined,
-    }));
+    };
   }
 }

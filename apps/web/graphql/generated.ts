@@ -130,6 +130,8 @@ export type Query = {
   teamRoster: Array<Player>;
   /** Current season stats for skaters on a team */
   teamSkaterStats: Array<SkaterSeasonStats>;
+  /** Current standings for a single team */
+  teamStanding?: Maybe<Standing>;
   /** All active NHL teams */
   teams: Array<Team>;
 };
@@ -167,6 +169,11 @@ export type QueryTeamRosterArgs = {
 
 
 export type QueryTeamSkaterStatsArgs = {
+  teamId: Scalars['Int']['input'];
+};
+
+
+export type QueryTeamStandingArgs = {
   teamId: Scalars['Int']['input'];
 };
 
@@ -237,6 +244,13 @@ export type GetStandingsQueryVariables = Exact<{
 
 
 export type GetStandingsQuery = { __typename?: 'Query', standings: Array<{ __typename?: 'Standing', teamId: number, teamName: string, teamLogo?: string | null, season: string, gamesPlayed: number, wins: number, losses: number, otLosses: number, points: number, goalsFor: number, goalsAgainst: number, divisionName?: Division | null, divisionRank?: number | null, conferenceName?: Conference | null, conferenceRank?: number | null, streakCode?: StreakCode | null, streakCount?: number | null }> };
+
+export type GetTeamStandingQueryVariables = Exact<{
+  teamId: Scalars['Int']['input'];
+}>;
+
+
+export type GetTeamStandingQuery = { __typename?: 'Query', teamStanding?: { __typename?: 'Standing', wins: number, losses: number, otLosses: number, points: number, gamesPlayed: number, divisionRank?: number | null, conferenceRank?: number | null, streakCode?: StreakCode | null, streakCount?: number | null } | null };
 
 export type GetTeamQueryVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -326,6 +340,44 @@ export function useGetStandingsLazyQuery(variables: GetStandingsQueryVariables |
   return VueApolloComposable.useLazyQuery<GetStandingsQuery, GetStandingsQueryVariables>(GetStandingsDocument, variables, options);
 }
 export type GetStandingsQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetStandingsQuery, GetStandingsQueryVariables>;
+export const GetTeamStandingDocument = gql`
+    query GetTeamStanding($teamId: Int!) {
+  teamStanding(teamId: $teamId) {
+    wins
+    losses
+    otLosses
+    points
+    gamesPlayed
+    divisionRank
+    conferenceRank
+    streakCode
+    streakCount
+  }
+}
+    `;
+
+/**
+ * __useGetTeamStandingQuery__
+ *
+ * To run a query within a Vue component, call `useGetTeamStandingQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTeamStandingQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the query
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useGetTeamStandingQuery({
+ *   teamId: // value for 'teamId'
+ * });
+ */
+export function useGetTeamStandingQuery(variables: GetTeamStandingQueryVariables | VueCompositionApi.Ref<GetTeamStandingQueryVariables> | ReactiveFunction<GetTeamStandingQueryVariables>, options: VueApolloComposable.UseQueryOptions<GetTeamStandingQuery, GetTeamStandingQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetTeamStandingQuery, GetTeamStandingQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetTeamStandingQuery, GetTeamStandingQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<GetTeamStandingQuery, GetTeamStandingQueryVariables>(GetTeamStandingDocument, variables, options);
+}
+export function useGetTeamStandingLazyQuery(variables?: GetTeamStandingQueryVariables | VueCompositionApi.Ref<GetTeamStandingQueryVariables> | ReactiveFunction<GetTeamStandingQueryVariables>, options: VueApolloComposable.UseQueryOptions<GetTeamStandingQuery, GetTeamStandingQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetTeamStandingQuery, GetTeamStandingQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetTeamStandingQuery, GetTeamStandingQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<GetTeamStandingQuery, GetTeamStandingQueryVariables>(GetTeamStandingDocument, variables, options);
+}
+export type GetTeamStandingQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetTeamStandingQuery, GetTeamStandingQueryVariables>;
 export const GetTeamDocument = gql`
     query GetTeam($id: Int!) {
   team(id: $id) {

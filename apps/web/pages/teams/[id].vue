@@ -5,6 +5,7 @@ import {
   useGetTeamSkaterStatsQuery,
   useGetTeamGoalieStatsQuery,
   useGetTeamGamesQuery,
+  useGetTeamStandingQuery,
   GameState,
   PositionCode,
 } from '~/graphql/generated';
@@ -17,8 +18,10 @@ const { result: rosterResult } = useGetTeamRosterQuery({ teamId });
 const { result: skaterStatsResult } = useGetTeamSkaterStatsQuery({ teamId });
 const { result: goalieStatsResult } = useGetTeamGoalieStatsQuery({ teamId });
 const { result: gamesResult } = useGetTeamGamesQuery({ teamId, limit: 20 });
+const { result: standingResult } = useGetTeamStandingQuery({ teamId });
 
 const team = computed(() => teamResult.value?.team);
+const standing = computed(() => standingResult.value?.teamStanding);
 
 type Tab = 'roster' | 'stats' | 'schedule';
 const activeTab = ref<Tab>('roster');
@@ -122,6 +125,15 @@ function formatGameDate(dateStr: string): string {
             <span class="text-sm text-gray-500 font-medium">{{ team.triCode }}</span>
             <span v-if="team.conferenceName" class="text-xs text-gray-600">&middot; {{ team.conferenceName }}</span>
             <span v-if="team.divisionName" class="text-xs text-gray-600">&middot; {{ team.divisionName }}</span>
+          </div>
+          <div v-if="standing" class="flex items-center gap-3 mt-1">
+            <span class="text-sm text-white font-semibold tabular-nums">
+              {{ standing.wins }}-{{ standing.losses }}-{{ standing.otLosses }}
+            </span>
+            <span class="text-sm text-gray-400 tabular-nums">{{ standing.points }} pts</span>
+            <span v-if="standing.streakCode && standing.streakCount" class="text-xs tabular-nums" :class="standing.streakCode === 'W' ? 'text-green-400' : standing.streakCode === 'L' ? 'text-red-400' : 'text-yellow-400'">
+              {{ standing.streakCode }}{{ standing.streakCount }}
+            </span>
           </div>
         </div>
       </div>

@@ -1,0 +1,15 @@
+query GetTeamRoster($teamId: Int!) {
+  teamRoster(teamId: $teamId) {
+    id
+    firstName
+    lastName
+    positionCode
+    sweaterNumber
+    headshot
+    shootsCatches
+    heightCm
+    weightKg
+    birthDate
+    birthCountry
+  }
+}

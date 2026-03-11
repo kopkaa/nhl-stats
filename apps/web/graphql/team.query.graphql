@@ -1,0 +1,8 @@
+query GetTeam($id: Int!) {
+  team(id: $id) {
+    id
+    fullName
+    triCode
+    logo
+  }
+}

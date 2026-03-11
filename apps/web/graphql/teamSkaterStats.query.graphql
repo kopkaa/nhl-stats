@@ -1,0 +1,22 @@
+query GetTeamSkaterStats($teamId: Int!) {
+  teamSkaterStats(teamId: $teamId) {
+    playerId
+    firstName
+    lastName
+    headshot
+    positionCode
+    gamesPlayed
+    goals
+    assists
+    points
+    plusMinus
+    penaltyMinutes
+    powerPlayGoals
+    shorthandedGoals
+    gameWinningGoals
+    shots
+    shootingPctg
+    avgTimeOnIce
+    faceoffWinPctg
+  }
+}

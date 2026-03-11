@@ -140,13 +140,35 @@ enum GameState {
 }
 
 type Query {
+  """All active NHL teams"""
   teams: [Team!]!
+
+  """Single team by ID"""
   team(id: Int!): Team
-  standings(season: String): [Standing!]!
+
+  """League standings, optionally filtered by season"""
+  standings(
+    """Season in format YYYY-YY (e.g. 2025-26)"""
+    season: String
+  ): [Standing!]!
+
+  """Team roster (all players)"""
   teamRoster(teamId: Int!): [Player!]!
+
+  """Current season stats for skaters on a team"""
   teamSkaterStats(teamId: Int!): [SkaterSeasonStats!]!
+
+  """Current season stats for goalies on a team"""
   teamGoalieStats(teamId: Int!): [GoalieSeasonStats!]!
+
+  """Games for a specific team"""
   teamGames(teamId: Int!, limit: Int = 50): [Game!]!
+
+  """All games on a given date"""
+  gamesByDate(
+    """YYYY-MM-DD"""
+    date: String!
+  ): [Game!]!
 }
 
 type Mutation {

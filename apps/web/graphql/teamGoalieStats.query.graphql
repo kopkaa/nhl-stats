@@ -1,0 +1,19 @@
+query GetTeamGoalieStats($teamId: Int!) {
+  teamGoalieStats(teamId: $teamId) {
+    playerId
+    firstName
+    lastName
+    headshot
+    gamesPlayed
+    gamesStarted
+    wins
+    losses
+    otLosses
+    goalsAgainstAvg
+    savePctg
+    shutouts
+    shotsAgainst
+    saves
+    goalsAgainst
+  }
+}

@@ -4,5 +4,7 @@ query GetTeam($id: Int!) {
     fullName
     triCode
     logo
+    conferenceName
+    divisionName
   }
 }

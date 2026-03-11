@@ -1,21 +1,14 @@
 <script setup lang="ts">
-import { useGetTeamsQuery, useGetStandingsQuery } from '~/graphql/generated';
+import { useGetTeamsQuery } from '~/graphql/generated';
 import { Conference, Division } from '@nhl-app/shared';
 
 const { result, loading, error } = useGetTeamsQuery();
-const { result: standingsResult } = useGetStandingsQuery();
+
+const teams = computed(() => result.value?.teams ?? []);
 
 const search = ref('');
 const activeConference = ref<Conference | 'all'>('all');
 const activeDivision = ref<Division | null>(null);
-
-const enrichedTeams = computed(() => {
-  const standings = standingsResult.value?.standings ?? [];
-  const byTeamId = Object.fromEntries(
-    standings.map((s) => [s.teamId, { divisionName: s.divisionName, conferenceName: s.conferenceName }]),
-  );
-  return (result.value?.teams ?? []).map((team) => ({ ...team, ...byTeamId[team.id] }));
-});
 
 const conferences = [
   { label: 'All', value: 'all' as const },
@@ -38,24 +31,24 @@ function selectDivision(div: Division) {
 }
 
 const filteredTeams = computed(() => {
-  let teams = enrichedTeams.value;
+  let filtered = teams.value;
 
   const q = search.value.toLowerCase();
   if (q) {
-    teams = teams.filter(
-      (t) => t.fullName.toLowerCase().includes(q) || t.triCode.toLowerCase().includes(q),
+    filtered = filtered.filter(
+      (team) => team.fullName.toLowerCase().includes(q) || team.triCode.toLowerCase().includes(q),
     );
   }
 
   if (activeConference.value !== 'all') {
-    teams = teams.filter((t) => t.conferenceName === activeConference.value);
+    filtered = filtered.filter((team) => team.conferenceName === activeConference.value);
   }
 
   if (activeDivision.value) {
-    teams = teams.filter((t) => t.divisionName === activeDivision.value);
+    filtered = filtered.filter((team) => team.divisionName === activeDivision.value);
   }
 
-  return teams;
+  return filtered;
 });
 </script>
 

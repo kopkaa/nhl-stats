@@ -115,13 +115,14 @@ function formatGameDate(dateStr: string): string {
     <template v-else>
       <!-- Header -->
       <div class="flex items-center gap-5 mb-8">
-        <NuxtLink to="/teams" class="text-gray-500 hover:text-white transition-colors no-underline">
-          <i class="pi pi-arrow-left text-sm" />
-        </NuxtLink>
-        <img v-if="team.logo" :src="team.logo" :alt="team.fullName" class="w-16 h-16 object-contain" />
+<img v-if="team.logo" :src="team.logo" :alt="team.fullName" class="w-16 h-16 object-contain" />
         <div>
           <h1 class="text-2xl font-bold text-white tracking-tight leading-tight">{{ team.fullName }}</h1>
-          <span class="text-sm text-gray-500 font-medium">{{ team.triCode }}</span>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-gray-500 font-medium">{{ team.triCode }}</span>
+            <span v-if="team.conferenceName" class="text-xs text-gray-600">&middot; {{ team.conferenceName }}</span>
+            <span v-if="team.divisionName" class="text-xs text-gray-600">&middot; {{ team.divisionName }}</span>
+          </div>
         </div>
       </div>
 

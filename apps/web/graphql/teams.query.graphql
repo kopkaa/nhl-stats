@@ -4,5 +4,7 @@ query GetTeams {
     fullName
     triCode
     logo
+    conferenceName
+    divisionName
   }
 }

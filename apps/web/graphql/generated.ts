@@ -1,6 +1,6 @@
 import gql from 'graphql-tag';
 import * as VueApolloComposable from '@vue/apollo-composable';
-import * as VueCompositionApi from '@vue/apollo-composable';
+import * as VueCompositionApi from 'vue';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -222,6 +222,8 @@ export enum StreakCode {
 
 export type Team = {
   __typename?: 'Team';
+  conferenceName?: Maybe<Scalars['String']['output']>;
+  divisionName?: Maybe<Scalars['String']['output']>;
   franchiseId?: Maybe<Scalars['Int']['output']>;
   fullName: Scalars['String']['output'];
   id: Scalars['Int']['output'];
@@ -241,7 +243,7 @@ export type GetTeamQueryVariables = Exact<{
 }>;
 
 
-export type GetTeamQuery = { __typename?: 'Query', team?: { __typename?: 'Team', id: number, fullName: string, triCode: string, logo?: string | null } | null };
+export type GetTeamQuery = { __typename?: 'Query', team?: { __typename?: 'Team', id: number, fullName: string, triCode: string, logo?: string | null, conferenceName?: string | null, divisionName?: string | null } | null };
 
 export type GetTeamGamesQueryVariables = Exact<{
   teamId: Scalars['Int']['input'];
@@ -275,7 +277,7 @@ export type GetTeamSkaterStatsQuery = { __typename?: 'Query', teamSkaterStats: A
 export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTeamsQuery = { __typename?: 'Query', teams: Array<{ __typename?: 'Team', id: number, fullName: string, triCode: string, logo?: string | null }> };
+export type GetTeamsQuery = { __typename?: 'Query', teams: Array<{ __typename?: 'Team', id: number, fullName: string, triCode: string, logo?: string | null, conferenceName?: string | null, divisionName?: string | null }> };
 
 
 export const GetStandingsDocument = gql`
@@ -331,6 +333,8 @@ export const GetTeamDocument = gql`
     fullName
     triCode
     logo
+    conferenceName
+    divisionName
   }
 }
     `;
@@ -538,6 +542,8 @@ export const GetTeamsDocument = gql`
     fullName
     triCode
     logo
+    conferenceName
+    divisionName
   }
 }
     `;

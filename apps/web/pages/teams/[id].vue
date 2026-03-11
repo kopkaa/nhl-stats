@@ -33,28 +33,28 @@ const rosterByPosition = computed(() =>
   positionGroups.map((group) => ({
     ...group,
     players: (rosterResult.value?.teamRoster ?? [])
-      .filter((p) => group.codes.includes(p.positionCode))
-      .sort((a, b) => (a.sweaterNumber ?? 99) - (b.sweaterNumber ?? 99)),
+      .filter((player) => group.codes.includes(player.positionCode))
+      .sort((playerA, playerB) => (playerA.sweaterNumber ?? 99) - (playerB.sweaterNumber ?? 99)),
   })),
 );
 
 const skaterStats = computed(() =>
-  [...(skaterStatsResult.value?.teamSkaterStats ?? [])].sort((a, b) => b.points - a.points),
+  [...(skaterStatsResult.value?.teamSkaterStats ?? [])].sort((skaterA, skaterB) => skaterB.points - skaterA.points),
 );
 
 const goalieStats = computed(() =>
-  [...(goalieStatsResult.value?.teamGoalieStats ?? [])].sort((a, b) => b.wins - a.wins),
+  [...(goalieStatsResult.value?.teamGoalieStats ?? [])].sort((goalieA, goalieB) => goalieB.wins - goalieA.wins),
 );
 
 const recentGames = computed(() =>
   (gamesResult.value?.teamGames ?? [])
-    .filter((g) => g.gameState === GameState.Final || g.gameState === GameState.Off)
+    .filter((game) => game.gameState === GameState.Final || game.gameState === GameState.Off)
     .slice(0, 10),
 );
 
 const upcomingGames = computed(() =>
   (gamesResult.value?.teamGames ?? [])
-    .filter((g) => g.gameState === GameState.Fut || g.gameState === GameState.Pre)
+    .filter((game) => game.gameState === GameState.Fut || game.gameState === GameState.Pre)
     .slice(0, 10),
 );
 
@@ -97,8 +97,8 @@ function opponentInfo(game: typeof recentGames.value[number]) {
 }
 
 function formatGameDate(dateStr: string): string {
-  const d = new Date(dateStr + 'T00:00:00');
-  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  const date = new Date(dateStr + 'T00:00:00');
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 </script>
 
@@ -144,41 +144,58 @@ function formatGameDate(dateStr: string): string {
       <div v-if="activeTab === 'roster'">
         <div v-for="group in rosterByPosition" :key="group.label" class="mb-6">
           <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{{ group.label }}</h3>
-          <div class="roster-table-wrap">
-            <table class="roster-table">
-              <thead>
-                <tr>
-                  <th class="w-8">#</th>
-                  <th class="text-left">Player</th>
-                  <th>POS</th>
-                  <th>S/C</th>
-                  <th>HT</th>
-                  <th>WT</th>
-                  <th>BORN</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="p in group.players" :key="p.id">
-                  <td class="text-gray-500 font-medium">{{ p.sweaterNumber ?? '—' }}</td>
-                  <td class="text-left">
-                    <div class="flex items-center gap-2">
-                      <img
-                        v-if="p.headshot"
-                        :src="p.headshot"
-                        :alt="`${p.firstName} ${p.lastName}`"
-                        class="w-7 h-7 rounded-full object-cover bg-gray-800"
-                      />
-                      <span class="text-white font-medium">{{ p.firstName }} {{ p.lastName }}</span>
-                    </div>
-                  </td>
-                  <td class="text-gray-400">{{ p.positionCode }}</td>
-                  <td class="text-gray-400">{{ p.shootsCatches ?? '—' }}</td>
-                  <td class="text-gray-400">{{ formatHeight(p.heightCm) }}</td>
-                  <td class="text-gray-400">{{ p.weightKg ? `${p.weightKg} kg` : '—' }}</td>
-                  <td class="text-gray-500 text-xs">{{ p.birthCountry ?? '' }}</td>
-                </tr>
-              </tbody>
-            </table>
+          <div class="team-table-wrap">
+            <DataTable :value="group.players" size="small" class="team-dt">
+              <Column field="sweaterNumber" header="#" sortable>
+                <template #body="{ data: player }">
+                  <span class="text-gray-500 font-medium">{{ player.sweaterNumber ?? '—' }}</span>
+                </template>
+              </Column>
+
+              <Column field="lastName" header="Player" sortable>
+                <template #body="{ data: player }">
+                  <div class="flex items-center gap-2">
+                    <img
+                      v-if="player.headshot"
+                      :src="player.headshot"
+                      :alt="`${player.firstName} ${player.lastName}`"
+                      class="w-7 h-7 rounded-full object-cover bg-gray-800"
+                    />
+                    <span class="text-white font-medium">{{ player.firstName }} {{ player.lastName }}</span>
+                  </div>
+                </template>
+              </Column>
+
+              <Column field="positionCode" header="POS" sortable>
+                <template #body="{ data: player }">
+                  <span class="text-gray-400">{{ player.positionCode }}</span>
+                </template>
+              </Column>
+
+              <Column field="shootsCatches" header="S/C">
+                <template #body="{ data: player }">
+                  <span class="text-gray-400">{{ player.shootsCatches ?? '—' }}</span>
+                </template>
+              </Column>
+
+              <Column field="heightCm" header="HT" sortable>
+                <template #body="{ data: player }">
+                  <span class="text-gray-400">{{ formatHeight(player.heightCm) }}</span>
+                </template>
+              </Column>
+
+              <Column field="weightKg" header="WT" sortable>
+                <template #body="{ data: player }">
+                  <span class="text-gray-400">{{ player.weightKg ? `${player.weightKg} kg` : '—' }}</span>
+                </template>
+              </Column>
+
+              <Column field="birthCountry" header="BORN">
+                <template #body="{ data: player }">
+                  <span class="text-gray-500 text-xs">{{ player.birthCountry ?? '' }}</span>
+                </template>
+              </Column>
+            </DataTable>
           </div>
         </div>
       </div>
@@ -187,106 +204,191 @@ function formatGameDate(dateStr: string): string {
       <div v-else-if="activeTab === 'stats'">
         <!-- Skaters -->
         <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Skaters</h3>
-        <div class="roster-table-wrap mb-6">
-          <table class="roster-table">
-            <thead>
-              <tr>
-                <th class="text-left">Player</th>
-                <th>POS</th>
-                <th>GP</th>
-                <th>G</th>
-                <th>A</th>
-                <th class="text-white">PTS</th>
-                <th>+/-</th>
-                <th>PIM</th>
-                <th>PPG</th>
-                <th>SHG</th>
-                <th>GWG</th>
-                <th>S</th>
-                <th>S%</th>
-                <th>TOI</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="s in skaterStats" :key="s.playerId">
-                <td class="text-left">
-                  <div class="flex items-center gap-2">
-                    <img
-                      v-if="s.headshot"
-                      :src="s.headshot"
-                      :alt="`${s.firstName} ${s.lastName}`"
-                      class="w-6 h-6 rounded-full object-cover bg-gray-800"
-                    />
-                    <span class="text-white font-medium">{{ s.firstName[0] }}. {{ s.lastName }}</span>
-                  </div>
-                </td>
-                <td class="text-gray-500 text-xs">{{ s.positionCode }}</td>
-                <td>{{ s.gamesPlayed }}</td>
-                <td>{{ s.goals }}</td>
-                <td>{{ s.assists }}</td>
-                <td class="text-white font-bold">{{ s.points }}</td>
-                <td :class="s.plusMinus > 0 ? 'text-green-400' : s.plusMinus < 0 ? 'text-red-400' : ''">
-                  {{ s.plusMinus > 0 ? '+' : '' }}{{ s.plusMinus }}
-                </td>
-                <td>{{ s.penaltyMinutes }}</td>
-                <td>{{ s.powerPlayGoals }}</td>
-                <td>{{ s.shorthandedGoals }}</td>
-                <td>{{ s.gameWinningGoals }}</td>
-                <td>{{ s.shots }}</td>
-                <td>{{ formatPctg(s.shootingPctg) }}</td>
-                <td>{{ formatToi(s.avgTimeOnIce) }}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="team-table-wrap mb-6">
+          <DataTable :value="skaterStats" size="small" class="team-dt team-dt--stats">
+            <Column field="lastName" header="Player" sortable>
+              <template #body="{ data: skater }">
+                <div class="flex items-center gap-2">
+                  <img
+                    v-if="skater.headshot"
+                    :src="skater.headshot"
+                    :alt="`${skater.firstName} ${skater.lastName}`"
+                    class="w-6 h-6 rounded-full object-cover bg-gray-800"
+                  />
+                  <span class="text-white font-medium">{{ skater.firstName[0] }}. {{ skater.lastName }}</span>
+                </div>
+              </template>
+            </Column>
+
+            <Column field="positionCode" header="POS" sortable>
+              <template #body="{ data: skater }">
+                <span class="text-gray-500 text-xs">{{ skater.positionCode }}</span>
+              </template>
+            </Column>
+
+            <Column field="gamesPlayed" header="GP" sortable>
+              <template #body="{ data: skater }">
+                <span class="text-gray-400 tabular-nums">{{ skater.gamesPlayed }}</span>
+              </template>
+            </Column>
+
+            <Column field="goals" header="G" sortable>
+              <template #body="{ data: skater }">
+                <span class="text-gray-400 tabular-nums">{{ skater.goals }}</span>
+              </template>
+            </Column>
+
+            <Column field="assists" header="A" sortable>
+              <template #body="{ data: skater }">
+                <span class="text-gray-400 tabular-nums">{{ skater.assists }}</span>
+              </template>
+            </Column>
+
+            <Column field="points" header="PTS" sortable>
+              <template #body="{ data: skater }">
+                <span class="text-white font-bold tabular-nums">{{ skater.points }}</span>
+              </template>
+            </Column>
+
+            <Column field="plusMinus" header="+/-" sortable>
+              <template #body="{ data: skater }">
+                <span
+                  :class="skater.plusMinus > 0 ? 'text-green-400' : skater.plusMinus < 0 ? 'text-red-400' : ''"
+                  class="tabular-nums"
+                >
+                  {{ skater.plusMinus > 0 ? '+' : '' }}{{ skater.plusMinus }}
+                </span>
+              </template>
+            </Column>
+
+            <Column field="penaltyMinutes" header="PIM" sortable>
+              <template #body="{ data: skater }">
+                <span class="text-gray-400 tabular-nums">{{ skater.penaltyMinutes }}</span>
+              </template>
+            </Column>
+
+            <Column field="powerPlayGoals" header="PPG" sortable>
+              <template #body="{ data: skater }">
+                <span class="text-gray-400 tabular-nums">{{ skater.powerPlayGoals }}</span>
+              </template>
+            </Column>
+
+            <Column field="shorthandedGoals" header="SHG" sortable>
+              <template #body="{ data: skater }">
+                <span class="text-gray-400 tabular-nums">{{ skater.shorthandedGoals }}</span>
+              </template>
+            </Column>
+
+            <Column field="gameWinningGoals" header="GWG" sortable>
+              <template #body="{ data: skater }">
+                <span class="text-gray-400 tabular-nums">{{ skater.gameWinningGoals }}</span>
+              </template>
+            </Column>
+
+            <Column field="shots" header="S" sortable>
+              <template #body="{ data: skater }">
+                <span class="text-gray-400 tabular-nums">{{ skater.shots }}</span>
+              </template>
+            </Column>
+
+            <Column field="shootingPctg" header="S%" sortable>
+              <template #body="{ data: skater }">
+                <span class="text-gray-400 tabular-nums">{{ formatPctg(skater.shootingPctg) }}</span>
+              </template>
+            </Column>
+
+            <Column field="avgTimeOnIce" header="TOI" sortable>
+              <template #body="{ data: skater }">
+                <span class="text-gray-400 tabular-nums">{{ formatToi(skater.avgTimeOnIce) }}</span>
+              </template>
+            </Column>
+          </DataTable>
         </div>
 
         <!-- Goalies -->
         <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Goalies</h3>
-        <div class="roster-table-wrap">
-          <table class="roster-table">
-            <thead>
-              <tr>
-                <th class="text-left">Player</th>
-                <th>GP</th>
-                <th>GS</th>
-                <th class="text-white">W</th>
-                <th>L</th>
-                <th>OTL</th>
-                <th>GAA</th>
-                <th class="text-white">SV%</th>
-                <th>SO</th>
-                <th>SA</th>
-                <th>SV</th>
-                <th>GA</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="g in goalieStats" :key="g.playerId">
-                <td class="text-left">
-                  <div class="flex items-center gap-2">
-                    <img
-                      v-if="g.headshot"
-                      :src="g.headshot"
-                      :alt="`${g.firstName} ${g.lastName}`"
-                      class="w-6 h-6 rounded-full object-cover bg-gray-800"
-                    />
-                    <span class="text-white font-medium">{{ g.firstName[0] }}. {{ g.lastName }}</span>
-                  </div>
-                </td>
-                <td>{{ g.gamesPlayed }}</td>
-                <td>{{ g.gamesStarted }}</td>
-                <td class="text-white font-bold">{{ g.wins }}</td>
-                <td>{{ g.losses }}</td>
-                <td>{{ g.otLosses }}</td>
-                <td>{{ g.goalsAgainstAvg?.toFixed(2) ?? '—' }}</td>
-                <td class="text-white font-bold">{{ g.savePctg ? `.${(g.savePctg * 1000).toFixed(0)}` : '—' }}</td>
-                <td>{{ g.shutouts }}</td>
-                <td>{{ g.shotsAgainst }}</td>
-                <td>{{ g.saves }}</td>
-                <td>{{ g.goalsAgainst }}</td>
-              </tr>
-            </tbody>
-          </table>
+        <div class="team-table-wrap">
+          <DataTable :value="goalieStats" size="small" class="team-dt team-dt--stats">
+            <Column field="lastName" header="Player" sortable>
+              <template #body="{ data: goalie }">
+                <div class="flex items-center gap-2">
+                  <img
+                    v-if="goalie.headshot"
+                    :src="goalie.headshot"
+                    :alt="`${goalie.firstName} ${goalie.lastName}`"
+                    class="w-6 h-6 rounded-full object-cover bg-gray-800"
+                  />
+                  <span class="text-white font-medium">{{ goalie.firstName[0] }}. {{ goalie.lastName }}</span>
+                </div>
+              </template>
+            </Column>
+
+            <Column field="gamesPlayed" header="GP" sortable>
+              <template #body="{ data: goalie }">
+                <span class="text-gray-400 tabular-nums">{{ goalie.gamesPlayed }}</span>
+              </template>
+            </Column>
+
+            <Column field="gamesStarted" header="GS" sortable>
+              <template #body="{ data: goalie }">
+                <span class="text-gray-400 tabular-nums">{{ goalie.gamesStarted }}</span>
+              </template>
+            </Column>
+
+            <Column field="wins" header="W" sortable>
+              <template #body="{ data: goalie }">
+                <span class="text-white font-bold tabular-nums">{{ goalie.wins }}</span>
+              </template>
+            </Column>
+
+            <Column field="losses" header="L" sortable>
+              <template #body="{ data: goalie }">
+                <span class="text-gray-400 tabular-nums">{{ goalie.losses }}</span>
+              </template>
+            </Column>
+
+            <Column field="otLosses" header="OTL" sortable>
+              <template #body="{ data: goalie }">
+                <span class="text-gray-400 tabular-nums">{{ goalie.otLosses }}</span>
+              </template>
+            </Column>
+
+            <Column field="goalsAgainstAvg" header="GAA" sortable>
+              <template #body="{ data: goalie }">
+                <span class="text-gray-400 tabular-nums">{{ goalie.goalsAgainstAvg?.toFixed(2) ?? '—' }}</span>
+              </template>
+            </Column>
+
+            <Column field="savePctg" header="SV%" sortable>
+              <template #body="{ data: goalie }">
+                <span class="text-white font-bold tabular-nums">{{ goalie.savePctg ? `.${(goalie.savePctg * 1000).toFixed(0)}` : '—' }}</span>
+              </template>
+            </Column>
+
+            <Column field="shutouts" header="SO" sortable>
+              <template #body="{ data: goalie }">
+                <span class="text-gray-400 tabular-nums">{{ goalie.shutouts }}</span>
+              </template>
+            </Column>
+
+            <Column field="shotsAgainst" header="SA" sortable>
+              <template #body="{ data: goalie }">
+                <span class="text-gray-400 tabular-nums">{{ goalie.shotsAgainst }}</span>
+              </template>
+            </Column>
+
+            <Column field="saves" header="SV" sortable>
+              <template #body="{ data: goalie }">
+                <span class="text-gray-400 tabular-nums">{{ goalie.saves }}</span>
+              </template>
+            </Column>
+
+            <Column field="goalsAgainst" header="GA" sortable>
+              <template #body="{ data: goalie }">
+                <span class="text-gray-400 tabular-nums">{{ goalie.goalsAgainst }}</span>
+              </template>
+            </Column>
+          </DataTable>
         </div>
       </div>
 
@@ -354,21 +456,31 @@ function formatGameDate(dateStr: string): string {
 </template>
 
 <style scoped>
-.roster-table-wrap {
+.team-table-wrap {
   background: rgb(17 17 27);
   border: 1px solid rgba(255, 255, 255, 0.07);
   border-radius: 10px;
+  overflow: hidden;
+}
+
+.team-dt :deep(.p-datatable-table-container) {
   overflow-x: auto;
 }
 
-.roster-table {
-  width: 100%;
+.team-dt :deep(.p-datatable-table) {
   border-collapse: collapse;
-  font-size: 0.75rem;
+  width: 100%;
 }
 
-.roster-table thead th {
+.team-dt :deep(th),
+.team-dt :deep(td) {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.team-dt :deep(.p-datatable-thead > tr > th) {
   background: transparent;
+  border: none;
   border-bottom: 1px solid rgba(255, 255, 255, 0.06);
   color: rgb(107 114 128);
   font-size: 0.65rem;
@@ -380,25 +492,94 @@ function formatGameDate(dateStr: string): string {
   white-space: nowrap;
 }
 
-.roster-table tbody tr {
+.team-dt :deep(.p-datatable-thead > tr > th:nth-child(2)) {
+  text-align: left;
+  width: 35%;
+}
+
+.team-dt :deep(.p-datatable-sort-icon) {
+  width: 0.6rem !important;
+  height: 0.6rem !important;
+  margin-left: 2px;
+}
+
+.team-dt :deep(.p-datatable-column-header-content) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.team-dt :deep(.p-datatable-thead > tr > th:nth-child(2) .p-datatable-column-header-content) {
+  justify-content: flex-start;
+}
+
+.team-dt :deep(.p-datatable-thead > tr > th.p-datatable-sortable-column:hover) {
+  background: transparent;
+  color: rgb(209 213 219);
+}
+
+.team-dt :deep(.p-datatable-thead > tr > th.p-datatable-column-sorted) {
+  background: transparent;
+  color: white;
+}
+
+.team-dt :deep(.p-datatable-tbody > tr) {
+  background: transparent;
   border-top: 1px solid rgba(255, 255, 255, 0.04);
   transition: background 0.12s;
 }
 
-.roster-table tbody tr:first-child {
+.team-dt :deep(.p-datatable-tbody > tr:first-child) {
   border-top: none;
 }
 
-.roster-table tbody tr:hover {
+.team-dt :deep(.p-datatable-tbody > tr:last-child) {
+  border-bottom: none;
+}
+
+.team-dt :deep(.p-datatable-tbody > tr:hover) {
   background: rgba(255, 255, 255, 0.03);
 }
 
-.roster-table tbody td {
+.team-dt :deep(.p-datatable-tbody > tr > td) {
+  border: none;
   padding: 0.4rem 0.5rem;
   color: rgb(156 163 175);
+  font-size: 0.75rem;
   font-variant-numeric: tabular-nums;
   text-align: center;
   white-space: nowrap;
+}
+
+.team-dt :deep(.p-datatable-tbody > tr > td:nth-child(2)) {
+  text-align: left;
+}
+
+.team-dt--stats :deep(.p-datatable-thead > tr > th:nth-child(1)) {
+  text-align: left;
+  width: 20%;
+}
+
+.team-dt--stats :deep(.p-datatable-thead > tr > th:nth-child(2)) {
+  text-align: center;
+  width: auto;
+}
+
+.team-dt--stats :deep(.p-datatable-thead > tr > th:nth-child(1) .p-datatable-column-header-content) {
+  justify-content: flex-start;
+}
+
+.team-dt--stats :deep(.p-datatable-thead > tr > th:nth-child(2) .p-datatable-column-header-content) {
+  justify-content: center;
+}
+
+.team-dt--stats :deep(.p-datatable-tbody > tr > td:nth-child(1)) {
+  text-align: left;
+}
+
+.team-dt--stats :deep(.p-datatable-tbody > tr > td:nth-child(2)) {
+  text-align: center;
 }
 
 .game-row {

@@ -67,15 +67,15 @@ const diffClass = (diff: number) => diff > 0 ? 'text-green-400' : diff < 0 ? 'te
 
       <Column field="teamName" header="Team" sortable>
         <template #body="{ data }">
-          <div class="flex items-center gap-2">
+          <NuxtLink :to="`/teams/${data.teamId}`" class="flex items-center gap-2 hover:text-white transition-colors">
             <img
               v-if="data.teamLogo"
               :src="data.teamLogo"
               :alt="data.teamName"
               class="w-4 h-4 object-contain shrink-0"
             />
-            <span class="text-white font-medium">{{ data.teamName }}</span>
-          </div>
+            <span class="text-white font-medium hover:underline">{{ data.teamName }}</span>
+          </NuxtLink>
         </template>
       </Column>
 

@@ -125,29 +125,40 @@ function formatGameDate(dateStr: string): string {
       </div>
 
       <!-- Tabs -->
-      <div class="flex gap-0.5 bg-gray-900 rounded-lg p-1 border border-gray-800 w-fit mb-6">
+      <div class="flex border-b border-white/[0.08] mb-6">
         <button
           v-for="tab in (['roster', 'stats', 'schedule'] as Tab[])"
           :key="tab"
-          class="px-4 py-1.5 text-xs rounded-md font-medium capitalize transition-colors cursor-pointer border-0"
-          :class="activeTab === tab
-            ? 'bg-gray-700 text-white'
-            : 'bg-transparent text-gray-500 hover:text-gray-300'"
+          class="relative flex items-center gap-1.5 px-5 py-3 text-[0.8rem] font-medium capitalize bg-transparent border-0 cursor-pointer tracking-tight transition-colors"
+          :class="activeTab === tab ? 'text-white after:absolute after:bottom-[-1px] after:left-3 after:right-3 after:h-0.5 after:bg-white after:rounded-t-sm' : 'text-gray-500 hover:text-gray-300'"
           @click="activeTab = tab"
         >
           {{ tab }}
+          <span
+            v-if="tab === 'roster'"
+            class="text-[0.65rem] tabular-nums rounded-lg px-1.5 py-px"
+            :class="activeTab === tab ? 'text-gray-400 bg-white/10' : 'text-gray-600 bg-white/[0.06]'"
+          >{{ rosterResult?.teamRoster?.length ?? 0 }}</span>
+          <span
+            v-if="tab === 'schedule'"
+            class="text-[0.65rem] tabular-nums rounded-lg px-1.5 py-px"
+            :class="activeTab === tab ? 'text-gray-400 bg-white/10' : 'text-gray-600 bg-white/[0.06]'"
+          >{{ recentGames.length + upcomingGames.length }}</span>
         </button>
       </div>
 
       <!-- Roster Tab -->
-      <div v-if="activeTab === 'roster'">
-        <div v-for="group in rosterByPosition" :key="group.label" class="mb-6">
-          <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">{{ group.label }}</h3>
+      <div v-if="activeTab === 'roster'" class="flex flex-col gap-6">
+        <div v-for="group in rosterByPosition" :key="group.label">
+          <div class="flex items-center gap-2 mb-2">
+            <h3 class="text-[0.7rem] font-semibold text-gray-500 uppercase tracking-widest m-0">{{ group.label }}</h3>
+            <span class="text-[0.6rem] text-gray-600 bg-white/5 px-1.5 py-px rounded tabular-nums">{{ group.players.length }}</span>
+          </div>
           <div class="team-table-wrap">
             <DataTable :value="group.players" size="small" class="team-dt">
               <Column field="sweaterNumber" header="#" sortable>
                 <template #body="{ data: player }">
-                  <span class="text-gray-500 font-medium">{{ player.sweaterNumber ?? '—' }}</span>
+                  <span class="text-gray-500 font-semibold tabular-nums text-xs">{{ player.sweaterNumber ?? '—' }}</span>
                 </template>
               </Column>
 
@@ -158,8 +169,9 @@ function formatGameDate(dateStr: string): string {
                       v-if="player.headshot"
                       :src="player.headshot"
                       :alt="`${player.firstName} ${player.lastName}`"
-                      class="w-7 h-7 rounded-full object-cover bg-gray-800"
+                      class="w-7 h-7 rounded-full object-cover bg-[rgb(31_31_46)] border border-white/[0.08]"
                     />
+                    <div v-else class="w-7 h-7 rounded-full bg-[rgb(31_31_46)] border border-white/[0.06]" />
                     <span class="text-white font-medium">{{ player.firstName }} {{ player.lastName }}</span>
                   </div>
                 </template>
@@ -167,7 +179,7 @@ function formatGameDate(dateStr: string): string {
 
               <Column field="positionCode" header="POS" sortable>
                 <template #body="{ data: player }">
-                  <span class="text-gray-400">{{ player.positionCode }}</span>
+                  <span class="inline-block text-[0.65rem] font-medium text-gray-400 bg-white/5 px-1.5 py-px rounded-sm tracking-tight">{{ player.positionCode }}</span>
                 </template>
               </Column>
 
@@ -400,7 +412,7 @@ function formatGameDate(dateStr: string): string {
             <div
               v-for="game in recentGames"
               :key="game.id"
-              class="game-row"
+              class="flex items-center gap-2 px-3 py-2 bg-[rgb(17_17_27)] border border-white/5 rounded-md transition-colors hover:bg-white/[0.03]"
             >
               <span class="text-xs text-gray-600 w-16 shrink-0 tabular-nums">{{ formatGameDate(game.gameDate) }}</span>
               <span :class="gameResult(game).class" class="w-5 text-center text-xs">{{ gameResult(game).text }}</span>
@@ -428,7 +440,7 @@ function formatGameDate(dateStr: string): string {
             <div
               v-for="game in upcomingGames"
               :key="game.id"
-              class="game-row"
+              class="flex items-center gap-2 px-3 py-2 bg-[rgb(17_17_27)] border border-white/5 rounded-md transition-colors hover:bg-white/[0.03]"
             >
               <span class="text-xs text-gray-600 w-16 shrink-0 tabular-nums">{{ formatGameDate(game.gameDate) }}</span>
               <div class="flex items-center gap-2 flex-1 min-w-0 ml-5">
@@ -455,10 +467,11 @@ function formatGameDate(dateStr: string): string {
 </template>
 
 <style scoped>
+/* ── Table wrap ── */
 .team-table-wrap {
   background: rgb(17 17 27);
   border: 1px solid rgba(255, 255, 255, 0.07);
-  border-radius: 10px;
+  border-radius: 8px;
   overflow: hidden;
 }
 
@@ -526,7 +539,7 @@ function formatGameDate(dateStr: string): string {
 .team-dt :deep(.p-datatable-tbody > tr) {
   background: transparent;
   border-top: 1px solid rgba(255, 255, 255, 0.04);
-  transition: background 0.12s;
+  transition: background 0.15s;
 }
 
 .team-dt :deep(.p-datatable-tbody > tr:first-child) {
@@ -538,7 +551,7 @@ function formatGameDate(dateStr: string): string {
 }
 
 .team-dt :deep(.p-datatable-tbody > tr:hover) {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.035);
 }
 
 .team-dt :deep(.p-datatable-tbody > tr > td) {
@@ -581,18 +594,4 @@ function formatGameDate(dateStr: string): string {
   text-align: center;
 }
 
-.game-row {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 0.75rem;
-  background: rgb(17 17 27);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  border-radius: 6px;
-  transition: background 0.12s;
-}
-
-.game-row:hover {
-  background: rgba(255, 255, 255, 0.03);
-}
 </style>

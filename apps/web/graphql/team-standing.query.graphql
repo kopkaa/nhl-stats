@@ -5,6 +5,7 @@ query GetTeamStanding($teamId: Int!) {
     otLosses
     points
     gamesPlayed
+    divisionName
     divisionRank
     conferenceRank
     streakCode

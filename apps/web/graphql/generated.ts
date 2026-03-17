@@ -250,7 +250,7 @@ export type GetTeamStandingQueryVariables = Exact<{
 }>;
 
 
-export type GetTeamStandingQuery = { __typename?: 'Query', teamStanding?: { __typename?: 'Standing', wins: number, losses: number, otLosses: number, points: number, gamesPlayed: number, divisionRank?: number | null, conferenceRank?: number | null, streakCode?: StreakCode | null, streakCount?: number | null } | null };
+export type GetTeamStandingQuery = { __typename?: 'Query', teamStanding?: { __typename?: 'Standing', wins: number, losses: number, otLosses: number, points: number, gamesPlayed: number, divisionName?: Division | null, divisionRank?: number | null, conferenceRank?: number | null, streakCode?: StreakCode | null, streakCount?: number | null } | null };
 
 export type GetTeamQueryVariables = Exact<{
   id: Scalars['Int']['input'];
@@ -348,6 +348,7 @@ export const GetTeamStandingDocument = gql`
     otLosses
     points
     gamesPlayed
+    divisionName
     divisionRank
     conferenceRank
     streakCode

@@ -8,4 +8,4 @@ generates:
       - typescript-vue-apollo
     config:
       withCompositionFunctions: true
-      vueCompositionApiImportFrom: "@vue/apollo-composable"
+      vueCompositionApiImportFrom: "vue"

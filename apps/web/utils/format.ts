@@ -16,6 +16,11 @@ export function formatPctg(pctg: number | null | undefined): string {
   return (pctg * 100).toFixed(1);
 }
 
+export function formatGameDate(dateStr: string): string {
+  const date = new Date(dateStr + 'T00:00:00');
+  return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+}
+
 export function ordinalSuffix(n: number): string {
   if (n % 100 >= 11 && n % 100 <= 13) return 'th';
   switch (n % 10) {

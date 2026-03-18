@@ -5,3 +5,117 @@
 body {
   @apply bg-gray-950 text-gray-100;
 }
+
+/* ── Shared DataTable base ── */
+.nhl-dt :deep(.p-datatable-table-container) {
+  overflow-x: auto;
+}
+
+.nhl-dt :deep(.p-datatable-table) {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+.nhl-dt :deep(th),
+.nhl-dt :deep(td) {
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.nhl-dt :deep(.p-datatable-thead > tr > th) {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgb(107 114 128);
+  font-size: 0.65rem;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  padding: 0.4rem 0.4rem;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.nhl-dt :deep(.p-datatable-sort-icon) {
+  width: 0.6rem !important;
+  height: 0.6rem !important;
+  margin-left: 2px;
+}
+
+.nhl-dt :deep(.p-datatable-column-header-content) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+}
+
+.nhl-dt :deep(.p-datatable-thead > tr > th.p-datatable-sortable-column:hover) {
+  background: transparent;
+  color: rgb(209 213 219);
+}
+
+.nhl-dt :deep(.p-datatable-thead > tr > th.p-datatable-column-sorted) {
+  background: transparent;
+  color: white;
+}
+
+.nhl-dt :deep(.p-datatable-tbody > tr) {
+  background: transparent;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  transition: background 0.12s;
+}
+
+.nhl-dt :deep(.p-datatable-tbody > tr:first-child) {
+  border-top: none;
+}
+
+.nhl-dt :deep(.p-datatable-tbody > tr:last-child) {
+  border-bottom: none;
+}
+
+.nhl-dt :deep(.p-datatable-tbody > tr:hover) {
+  background: rgba(255, 255, 255, 0.035);
+}
+
+.nhl-dt :deep(.p-datatable-tbody > tr > td) {
+  border: none;
+  padding: 0.4rem 0.4rem;
+  color: rgb(156 163 175);
+  font-size: 0.75rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* ── Name column left-aligned (2nd col by default) ── */
+.nhl-dt--name-col-2 :deep(.p-datatable-thead > tr > th:nth-child(2)) {
+  text-align: left;
+  width: 35%;
+}
+
+.nhl-dt--name-col-2 :deep(.p-datatable-thead > tr > th:nth-child(2) .p-datatable-column-header-content) {
+  justify-content: flex-start;
+}
+
+.nhl-dt--name-col-2 :deep(.p-datatable-tbody > tr > td:nth-child(2)) {
+  text-align: left;
+}
+
+/* ── Name column left-aligned (1st col) ── */
+.nhl-dt--name-col-1 :deep(.p-datatable-thead > tr > th:nth-child(1)) {
+  text-align: left;
+  width: 20%;
+}
+
+.nhl-dt--name-col-1 :deep(.p-datatable-thead > tr > th:nth-child(1) .p-datatable-column-header-content) {
+  justify-content: flex-start;
+}
+
+.nhl-dt--name-col-1 :deep(.p-datatable-tbody > tr > td:nth-child(1)) {
+  text-align: left;
+}
+
+/* ── Playoff cutoff line ── */
+.nhl-dt :deep(.p-datatable-tbody > tr.playoff-cutoff) {
+  border-bottom: 1px solid rgba(239, 68, 68, 0.45);
+}

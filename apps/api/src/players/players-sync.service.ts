@@ -61,6 +61,13 @@ export class PlayersSyncService {
     return totalPlayers;
   }
 
+  private async getKnownPlayerIds(): Promise<Set<number>> {
+    const rows = await this.databaseService.db
+      .select({ id: players.id })
+      .from(players);
+    return new Set(rows.map((row) => row.id));
+  }
+
   private async syncTeamRoster(
     teamId: number,
     triCode: string,
@@ -123,9 +130,12 @@ export class PlayersSyncService {
     );
 
     const season = formatSeason(data.season);
+    const rosterPlayerIds = await this.getKnownPlayerIds();
 
     if (data.skaters.length > 0) {
-      const skaterRows = data.skaters.map((s) => ({
+      const skaterRows = data.skaters
+        .filter((skater) => rosterPlayerIds.has(skater.playerId))
+        .map((s) => ({
         playerId: s.playerId,
         season,
         gamesPlayed: s.gamesPlayed,
@@ -169,7 +179,9 @@ export class PlayersSyncService {
     }
 
     if (data.goalies.length > 0) {
-      const goalieRows = data.goalies.map((g) => ({
+      const goalieRows = data.goalies
+        .filter((goalie) => rosterPlayerIds.has(goalie.playerId))
+        .map((g) => ({
         playerId: g.playerId,
         season,
         gamesPlayed: g.gamesPlayed,

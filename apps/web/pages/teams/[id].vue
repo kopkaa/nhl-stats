@@ -29,8 +29,8 @@ const goalieStats = computed(() =>
   [...(goalieStatsResult.value?.teamGoalieStats ?? [])].sort((goalieA, goalieB) => goalieB.wins - goalieA.wins),
 );
 
-type Tab = 'roster' | 'stats' | 'schedule';
-const activeTab = ref<Tab>('roster');
+type Tab = 'overview' | 'roster' | 'stats' | 'schedule';
+const activeTab = ref<Tab>('overview');
 </script>
 
 <template>
@@ -73,7 +73,7 @@ const activeTab = ref<Tab>('roster');
       <!-- Tabs -->
       <div class="flex border-b border-white/[0.08] mb-6">
         <button
-          v-for="tab in (['roster', 'stats', 'schedule'] as Tab[])"
+          v-for="tab in (['overview', 'roster', 'stats', 'schedule'] as Tab[])"
           :key="tab"
           class="relative flex items-center gap-1.5 px-5 py-3 text-[0.8rem] font-medium capitalize bg-transparent border-0 cursor-pointer tracking-tight transition-colors"
           :class="activeTab === tab ? 'text-white after:absolute after:bottom-[-1px] after:left-3 after:right-3 after:h-0.5 after:bg-white after:rounded-t-sm' : 'text-gray-500 hover:text-gray-300'"
@@ -89,7 +89,8 @@ const activeTab = ref<Tab>('roster');
       </div>
 
       <!-- Tab Content -->
-      <TeamRoster v-if="activeTab === 'roster'" :players="rosterResult?.teamRoster ?? []" />
+      <TeamOverview v-if="activeTab === 'overview'" :skaters="skaterStats" :goalies="goalieStats" :games="gamesResult?.teamGames ?? []" :team-id="teamId" />
+      <TeamRoster v-else-if="activeTab === 'roster'" :players="rosterResult?.teamRoster ?? []" />
       <TeamStats v-else-if="activeTab === 'stats'" :skaters="skaterStats" :goalies="goalieStats" />
       <TeamSchedule v-else-if="activeTab === 'schedule'" :games="gamesResult?.teamGames ?? []" :team-id="teamId" />
     </template>

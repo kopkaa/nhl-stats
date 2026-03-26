@@ -63,7 +63,7 @@ const activeTab = ref<Tab>('overview');
               {{ standing.wins }}-{{ standing.losses }}-{{ standing.otLosses }}
             </span>
             <span class="text-sm text-gray-400 tabular-nums">{{ standing.points }} pts</span>
-            <span v-if="standing.streakCode && standing.streakCount" class="text-xs tabular-nums" :class="standing.streakCode === 'W' ? 'text-green-400' : standing.streakCode === 'L' ? 'text-red-400' : 'text-yellow-400'">
+            <span v-if="standing.streakCode && standing.streakCount" class="text-xs tabular-nums" :class="standing.streakCode === 'W' ? 'text-result-win' : standing.streakCode === 'L' ? 'text-result-loss' : 'text-result-ot'">
               {{ standing.streakCode }}{{ standing.streakCount }}
             </span>
           </div>

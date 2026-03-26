@@ -50,8 +50,8 @@ function gameResult(game: Game): { text: string; class: string } {
   const teamScore = isHome ? game.homeScore : game.awayScore;
   const oppScore = isHome ? game.awayScore : game.homeScore;
   if (teamScore == null || oppScore == null) return { text: '—', class: 'text-gray-500' };
-  if (teamScore > oppScore) return { text: 'W', class: 'text-green-400' };
-  return { text: 'L', class: 'text-red-400' };
+  if (teamScore > oppScore) return { text: 'W', class: 'text-result-win' };
+  return { text: 'L', class: 'text-result-loss' };
 }
 
 function opponentInfo(game: Game) {

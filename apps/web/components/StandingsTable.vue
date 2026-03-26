@@ -32,13 +32,13 @@ function rowClass(data: StandingRow) {
 }
 
 const streakColors: Record<string, string> = {
-  W: 'text-green-400 font-medium',
-  L: 'text-red-400 font-medium',
-  OT: 'text-yellow-400 font-medium',
+  W: 'text-result-win font-medium',
+  L: 'text-result-loss font-medium',
+  OT: 'text-result-ot font-medium',
 };
 
 const streakClass = (streak: string) => streakColors[streak[0]] ?? 'text-gray-400';
-const diffClass = (diff: number) => diff > 0 ? 'text-green-400' : diff < 0 ? 'text-red-400' : 'text-gray-500';
+const diffClass = (diff: number) => diff > 0 ? 'text-result-win' : diff < 0 ? 'text-result-loss' : 'text-gray-500';
 </script>
 
 <template>

@@ -63,7 +63,7 @@ defineProps<{
         <Column field="plusMinus" header="+/-" sortable>
           <template #body="{ data: skater }">
             <span
-              :class="skater.plusMinus > 0 ? 'text-green-400' : skater.plusMinus < 0 ? 'text-red-400' : ''"
+              :class="skater.plusMinus > 0 ? 'text-result-win' : skater.plusMinus < 0 ? 'text-result-loss' : ''"
               class="tabular-nums"
             >
               {{ skater.plusMinus > 0 ? '+' : '' }}{{ skater.plusMinus }}

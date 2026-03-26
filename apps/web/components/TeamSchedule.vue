@@ -26,8 +26,8 @@ function gameResult(game: Game): { text: string; class: string } {
   const teamScore = isHome ? game.homeScore : game.awayScore;
   const oppScore = isHome ? game.awayScore : game.homeScore;
   if (teamScore == null || oppScore == null) return { text: '—', class: 'text-gray-500' };
-  if (teamScore > oppScore) return { text: 'W', class: 'text-green-400 font-semibold' };
-  return { text: 'L', class: 'text-red-400 font-semibold' };
+  if (teamScore > oppScore) return { text: 'W', class: 'text-result-win font-semibold' };
+  return { text: 'L', class: 'text-result-loss font-semibold' };
 }
 
 function opponentInfo(game: Game) {

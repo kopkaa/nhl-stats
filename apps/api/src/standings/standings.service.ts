@@ -52,15 +52,19 @@ export class StandingsService {
     );
   }
 
+  private baseQuery() {
+    return this.databaseService.db
+      .select(selectFields)
+      .from(standings)
+      .innerJoin(teams, eq(standings.teamId, teams.id));
+  }
+
   private async fetchFromDb(season?: string): Promise<Standing[]> {
     const where: SQL | undefined = season
       ? eq(standings.season, season)
       : undefined;
 
-    const rows = await this.databaseService.db
-      .select(selectFields)
-      .from(standings)
-      .innerJoin(teams, eq(standings.teamId, teams.id))
+    const rows = await this.baseQuery()
       .where(where)
       .orderBy(desc(standings.points));
 
@@ -74,10 +78,7 @@ export class StandingsService {
   }
 
   private async fetchOneByTeam(teamId: number): Promise<Standing | undefined> {
-    const rows = await this.databaseService.db
-      .select(selectFields)
-      .from(standings)
-      .innerJoin(teams, eq(standings.teamId, teams.id))
+    const rows = await this.baseQuery()
       .where(eq(standings.teamId, teamId))
       .orderBy(desc(standings.season))
       .limit(1);
@@ -85,7 +86,7 @@ export class StandingsService {
     return rows.length > 0 ? this.mapRow(rows[0]) : undefined;
   }
 
-  private mapRow(row: typeof selectFields extends infer T ? { [K in keyof T]: any } : never): Standing {
+  private mapRow(row: Awaited<ReturnType<typeof this.baseQuery>>[number]): Standing {
     return {
       ...row,
       teamLogo: row.teamLogo ?? undefined,

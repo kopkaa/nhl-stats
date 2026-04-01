@@ -4,7 +4,7 @@ import { NhlApiClient, CACHE_TTL } from '../common';
 import { CacheService } from '../cache';
 import { DatabaseService, teams } from '../database';
 import { Team } from './team.model';
-import { HISTORIC_TEAM_IDS } from './teams.constants';
+import { HISTORIC_TEAM_IDS, teamLogoUrl } from './teams.constants';
 import type { NhlTeamResponse, NhlTeamsApiResponse } from './teams.types';
 
 @Injectable()
@@ -41,15 +41,7 @@ export class TeamsService {
       .orderBy(teams.fullName);
 
     if (dbTeams.length > 0) {
-      return dbTeams.map((row) => ({
-        id: row.id,
-        franchiseId: row.franchiseId,
-        fullName: row.fullName,
-        triCode: row.triCode,
-        logo: row.logo ?? undefined,
-        conferenceName: row.conferenceName ?? undefined,
-        divisionName: row.divisionName ?? undefined,
-      }));
+      return dbTeams.map((row) => this.mapDbRow(row));
     }
 
     this.logger.warn(
@@ -66,16 +58,7 @@ export class TeamsService {
       .limit(1);
 
     if (rows.length > 0) {
-      const row = rows[0];
-      return {
-        id: row.id,
-        franchiseId: row.franchiseId,
-        fullName: row.fullName,
-        triCode: row.triCode,
-        logo: row.logo ?? undefined,
-        conferenceName: row.conferenceName ?? undefined,
-        divisionName: row.divisionName ?? undefined,
-      };
+      return this.mapDbRow(rows[0]);
     }
 
     this.logger.warn(
@@ -83,6 +66,18 @@ export class TeamsService {
     );
     const allTeams = await this.fetchFromApi();
     return allTeams.find((team) => team.id === id) ?? null;
+  }
+
+  private mapDbRow(row: typeof teams.$inferSelect): Team {
+    return {
+      id: row.id,
+      franchiseId: row.franchiseId,
+      fullName: row.fullName,
+      triCode: row.triCode,
+      logo: row.logo ?? undefined,
+      conferenceName: row.conferenceName ?? undefined,
+      divisionName: row.divisionName ?? undefined,
+    };
   }
 
   private async fetchFromApi(): Promise<Team[]> {
@@ -101,7 +96,7 @@ export class TeamsService {
       franchiseId: team.franchiseId,
       fullName: team.fullName,
       triCode: team.triCode,
-      logo: `https://assets.nhle.com/logos/nhl/svg/${team.triCode}_light.svg`,
+      logo: teamLogoUrl(team.triCode),
     };
   }
 }

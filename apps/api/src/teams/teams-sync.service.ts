@@ -2,7 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { sql } from 'drizzle-orm';
 import { NhlApiClient } from '../common';
 import { DatabaseService, teams } from '../database';
-import { HISTORIC_TEAM_IDS } from './teams.constants';
+import { HISTORIC_TEAM_IDS, teamLogoUrl } from './teams.constants';
 import type { NhlTeamsApiResponse } from './teams.types';
 
 @Injectable()
@@ -31,7 +31,7 @@ export class TeamsSyncService {
           franchiseId: team.franchiseId,
           fullName: team.fullName,
           triCode: team.triCode,
-          logo: `https://assets.nhle.com/logos/nhl/svg/${team.triCode}_light.svg`,
+          logo: teamLogoUrl(team.triCode),
           updatedAt: new Date(),
         })),
       )

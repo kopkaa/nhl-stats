@@ -3,4 +3,5 @@ export const CACHE_TTL = {
   STANDINGS: 43200, // 12h
   PLAYERS: 43200, // 12h
   GAMES: 3600, // 1h
+  LEADERS: 43200, // 12h
 } as const;

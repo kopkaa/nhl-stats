@@ -5,6 +5,7 @@ const navItems = [
   { label: 'Dashboard', icon: 'pi pi-home', to: '/' },
   { label: 'Teams', icon: 'pi pi-users', to: '/teams' },
   { label: 'Standings', icon: 'pi pi-chart-bar', to: '/standings' },
+  { label: 'Leaders', icon: 'pi pi-trophy', to: '/leaders' },
 ];
 </script>
 

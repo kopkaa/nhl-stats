@@ -1,0 +1,34 @@
+query GetSkaterLeaders($limit: Int) {
+  skaterLeaders(limit: $limit) {
+    goals {
+      playerId
+      firstName
+      lastName
+      headshot
+      positionCode
+      teamName
+      teamLogo
+      value
+    }
+    assists {
+      playerId
+      firstName
+      lastName
+      headshot
+      positionCode
+      teamName
+      teamLogo
+      value
+    }
+    points {
+      playerId
+      firstName
+      lastName
+      headshot
+      positionCode
+      teamName
+      teamLogo
+      value
+    }
+  }
+}

@@ -58,6 +58,24 @@ export enum GameState {
   Pre = 'PRE'
 }
 
+export type GoalieLeaderEntry = {
+  __typename?: 'GoalieLeaderEntry';
+  firstName: Scalars['String']['output'];
+  headshot?: Maybe<Scalars['String']['output']>;
+  lastName: Scalars['String']['output'];
+  playerId: Scalars['Int']['output'];
+  teamLogo?: Maybe<Scalars['String']['output']>;
+  teamName: Scalars['String']['output'];
+  value: Scalars['Float']['output'];
+};
+
+export type GoalieLeaders = {
+  __typename?: 'GoalieLeaders';
+  savePctg: Array<GoalieLeaderEntry>;
+  shutouts: Array<GoalieLeaderEntry>;
+  wins: Array<GoalieLeaderEntry>;
+};
+
 export type GoalieSeasonStats = {
   __typename?: 'GoalieSeasonStats';
   firstName: Scalars['String']['output'];
@@ -118,6 +136,10 @@ export type Query = {
   __typename?: 'Query';
   /** All games on a given date */
   gamesByDate: Array<Game>;
+  /** Top goalies by wins, save percentage, and shutouts */
+  goalieLeaders: GoalieLeaders;
+  /** Top skaters by goals, assists, and points */
+  skaterLeaders: SkaterLeaders;
   /** League standings, optionally filtered by season */
   standings: Array<Standing>;
   /** Single team by ID */
@@ -139,6 +161,16 @@ export type Query = {
 
 export type QueryGamesByDateArgs = {
   date: Scalars['String']['input'];
+};
+
+
+export type QueryGoalieLeadersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
+};
+
+
+export type QuerySkaterLeadersArgs = {
+  limit?: InputMaybe<Scalars['Int']['input']>;
 };
 
 
@@ -175,6 +207,25 @@ export type QueryTeamSkaterStatsArgs = {
 
 export type QueryTeamStandingArgs = {
   teamId: Scalars['Int']['input'];
+};
+
+export type SkaterLeaderEntry = {
+  __typename?: 'SkaterLeaderEntry';
+  firstName: Scalars['String']['output'];
+  headshot?: Maybe<Scalars['String']['output']>;
+  lastName: Scalars['String']['output'];
+  playerId: Scalars['Int']['output'];
+  positionCode: PositionCode;
+  teamLogo?: Maybe<Scalars['String']['output']>;
+  teamName: Scalars['String']['output'];
+  value: Scalars['Int']['output'];
+};
+
+export type SkaterLeaders = {
+  __typename?: 'SkaterLeaders';
+  assists: Array<SkaterLeaderEntry>;
+  goals: Array<SkaterLeaderEntry>;
+  points: Array<SkaterLeaderEntry>;
 };
 
 export type SkaterSeasonStats = {
@@ -238,6 +289,20 @@ export type Team = {
   triCode: Scalars['String']['output'];
 };
 
+export type GetGoalieLeadersQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetGoalieLeadersQuery = { __typename?: 'Query', goalieLeaders: { __typename?: 'GoalieLeaders', wins: Array<{ __typename?: 'GoalieLeaderEntry', playerId: number, firstName: string, lastName: string, headshot?: string | null, teamName: string, teamLogo?: string | null, value: number }>, savePctg: Array<{ __typename?: 'GoalieLeaderEntry', playerId: number, firstName: string, lastName: string, headshot?: string | null, teamName: string, teamLogo?: string | null, value: number }>, shutouts: Array<{ __typename?: 'GoalieLeaderEntry', playerId: number, firstName: string, lastName: string, headshot?: string | null, teamName: string, teamLogo?: string | null, value: number }> } };
+
+export type GetSkaterLeadersQueryVariables = Exact<{
+  limit?: InputMaybe<Scalars['Int']['input']>;
+}>;
+
+
+export type GetSkaterLeadersQuery = { __typename?: 'Query', skaterLeaders: { __typename?: 'SkaterLeaders', goals: Array<{ __typename?: 'SkaterLeaderEntry', playerId: number, firstName: string, lastName: string, headshot?: string | null, positionCode: PositionCode, teamName: string, teamLogo?: string | null, value: number }>, assists: Array<{ __typename?: 'SkaterLeaderEntry', playerId: number, firstName: string, lastName: string, headshot?: string | null, positionCode: PositionCode, teamName: string, teamLogo?: string | null, value: number }>, points: Array<{ __typename?: 'SkaterLeaderEntry', playerId: number, firstName: string, lastName: string, headshot?: string | null, positionCode: PositionCode, teamName: string, teamLogo?: string | null, value: number }> } };
+
 export type GetStandingsQueryVariables = Exact<{
   season?: InputMaybe<Scalars['String']['input']>;
 }>;
@@ -294,6 +359,121 @@ export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetTeamsQuery = { __typename?: 'Query', teams: Array<{ __typename?: 'Team', id: number, fullName: string, triCode: string, logo?: string | null, conferenceName?: string | null, divisionName?: string | null }> };
 
 
+export const GetGoalieLeadersDocument = gql`
+    query GetGoalieLeaders($limit: Int) {
+  goalieLeaders(limit: $limit) {
+    wins {
+      playerId
+      firstName
+      lastName
+      headshot
+      teamName
+      teamLogo
+      value
+    }
+    savePctg {
+      playerId
+      firstName
+      lastName
+      headshot
+      teamName
+      teamLogo
+      value
+    }
+    shutouts {
+      playerId
+      firstName
+      lastName
+      headshot
+      teamName
+      teamLogo
+      value
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetGoalieLeadersQuery__
+ *
+ * To run a query within a Vue component, call `useGetGoalieLeadersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetGoalieLeadersQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the query
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useGetGoalieLeadersQuery({
+ *   limit: // value for 'limit'
+ * });
+ */
+export function useGetGoalieLeadersQuery(variables: GetGoalieLeadersQueryVariables | VueCompositionApi.Ref<GetGoalieLeadersQueryVariables> | ReactiveFunction<GetGoalieLeadersQueryVariables> = {}, options: VueApolloComposable.UseQueryOptions<GetGoalieLeadersQuery, GetGoalieLeadersQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetGoalieLeadersQuery, GetGoalieLeadersQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetGoalieLeadersQuery, GetGoalieLeadersQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<GetGoalieLeadersQuery, GetGoalieLeadersQueryVariables>(GetGoalieLeadersDocument, variables, options);
+}
+export function useGetGoalieLeadersLazyQuery(variables: GetGoalieLeadersQueryVariables | VueCompositionApi.Ref<GetGoalieLeadersQueryVariables> | ReactiveFunction<GetGoalieLeadersQueryVariables> = {}, options: VueApolloComposable.UseQueryOptions<GetGoalieLeadersQuery, GetGoalieLeadersQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetGoalieLeadersQuery, GetGoalieLeadersQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetGoalieLeadersQuery, GetGoalieLeadersQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<GetGoalieLeadersQuery, GetGoalieLeadersQueryVariables>(GetGoalieLeadersDocument, variables, options);
+}
+export type GetGoalieLeadersQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetGoalieLeadersQuery, GetGoalieLeadersQueryVariables>;
+export const GetSkaterLeadersDocument = gql`
+    query GetSkaterLeaders($limit: Int) {
+  skaterLeaders(limit: $limit) {
+    goals {
+      playerId
+      firstName
+      lastName
+      headshot
+      positionCode
+      teamName
+      teamLogo
+      value
+    }
+    assists {
+      playerId
+      firstName
+      lastName
+      headshot
+      positionCode
+      teamName
+      teamLogo
+      value
+    }
+    points {
+      playerId
+      firstName
+      lastName
+      headshot
+      positionCode
+      teamName
+      teamLogo
+      value
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetSkaterLeadersQuery__
+ *
+ * To run a query within a Vue component, call `useGetSkaterLeadersQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetSkaterLeadersQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the query
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useGetSkaterLeadersQuery({
+ *   limit: // value for 'limit'
+ * });
+ */
+export function useGetSkaterLeadersQuery(variables: GetSkaterLeadersQueryVariables | VueCompositionApi.Ref<GetSkaterLeadersQueryVariables> | ReactiveFunction<GetSkaterLeadersQueryVariables> = {}, options: VueApolloComposable.UseQueryOptions<GetSkaterLeadersQuery, GetSkaterLeadersQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetSkaterLeadersQuery, GetSkaterLeadersQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetSkaterLeadersQuery, GetSkaterLeadersQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<GetSkaterLeadersQuery, GetSkaterLeadersQueryVariables>(GetSkaterLeadersDocument, variables, options);
+}
+export function useGetSkaterLeadersLazyQuery(variables: GetSkaterLeadersQueryVariables | VueCompositionApi.Ref<GetSkaterLeadersQueryVariables> | ReactiveFunction<GetSkaterLeadersQueryVariables> = {}, options: VueApolloComposable.UseQueryOptions<GetSkaterLeadersQuery, GetSkaterLeadersQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetSkaterLeadersQuery, GetSkaterLeadersQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetSkaterLeadersQuery, GetSkaterLeadersQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<GetSkaterLeadersQuery, GetSkaterLeadersQueryVariables>(GetSkaterLeadersDocument, variables, options);
+}
+export type GetSkaterLeadersQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetSkaterLeadersQuery, GetSkaterLeadersQueryVariables>;
 export const GetStandingsDocument = gql`
     query GetStandings($season: String) {
   standings(season: $season) {

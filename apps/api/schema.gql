@@ -141,6 +141,39 @@ enum GameState {
   CRIT
 }
 
+type SkaterLeaderEntry {
+  playerId: Int!
+  firstName: String!
+  lastName: String!
+  headshot: String
+  positionCode: PositionCode!
+  teamName: String!
+  teamLogo: String
+  value: Int!
+}
+
+type GoalieLeaderEntry {
+  playerId: Int!
+  firstName: String!
+  lastName: String!
+  headshot: String
+  teamName: String!
+  teamLogo: String
+  value: Float!
+}
+
+type SkaterLeaders {
+  goals: [SkaterLeaderEntry!]!
+  assists: [SkaterLeaderEntry!]!
+  points: [SkaterLeaderEntry!]!
+}
+
+type GoalieLeaders {
+  wins: [GoalieLeaderEntry!]!
+  savePctg: [GoalieLeaderEntry!]!
+  shutouts: [GoalieLeaderEntry!]!
+}
+
 type Query {
   """All active NHL teams"""
   teams: [Team!]!
@@ -174,6 +207,12 @@ type Query {
     """YYYY-MM-DD"""
     date: String!
   ): [Game!]!
+
+  """Top skaters by goals, assists, and points"""
+  skaterLeaders(limit: Int = 10): SkaterLeaders!
+
+  """Top goalies by wins, save percentage, and shutouts"""
+  goalieLeaders(limit: Int = 10): GoalieLeaders!
 }
 
 type Mutation {

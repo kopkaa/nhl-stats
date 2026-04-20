@@ -2,11 +2,9 @@ query GetTeamGames($teamId: Int!, $limit: Int) {
   teamGames(teamId: $teamId, limit: $limit) {
     id
     gameDate
-    startTimeUTC
     gameState
     venue
     homeTeamId
-    awayTeamId
     homeTeamName
     homeTeamLogo
     awayTeamName

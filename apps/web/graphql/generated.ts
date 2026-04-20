@@ -165,12 +165,12 @@ export type QueryGamesByDateArgs = {
 
 
 export type QueryGoalieLeadersArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>;
+  limit?: Scalars['Int']['input'];
 };
 
 
 export type QuerySkaterLeadersArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>;
+  limit?: Scalars['Int']['input'];
 };
 
 
@@ -330,7 +330,7 @@ export type GetTeamGamesQueryVariables = Exact<{
 }>;
 
 
-export type GetTeamGamesQuery = { __typename?: 'Query', teamGames: Array<{ __typename?: 'Game', id: number, gameDate: string, startTimeUTC?: string | null, gameState: GameState, venue?: string | null, homeTeamId: number, awayTeamId: number, homeTeamName?: string | null, homeTeamLogo?: string | null, awayTeamName?: string | null, awayTeamLogo?: string | null, homeScore?: number | null, awayScore?: number | null }> };
+export type GetTeamGamesQuery = { __typename?: 'Query', teamGames: Array<{ __typename?: 'Game', id: number, gameDate: string, gameState: GameState, venue?: string | null, homeTeamId: number, homeTeamName?: string | null, homeTeamLogo?: string | null, awayTeamName?: string | null, awayTeamLogo?: string | null, homeScore?: number | null, awayScore?: number | null }> };
 
 export type GetTeamGoalieStatsQueryVariables = Exact<{
   teamId: Scalars['Int']['input'];
@@ -344,14 +344,14 @@ export type GetTeamRosterQueryVariables = Exact<{
 }>;
 
 
-export type GetTeamRosterQuery = { __typename?: 'Query', teamRoster: Array<{ __typename?: 'Player', id: number, firstName: string, lastName: string, positionCode: PositionCode, sweaterNumber?: number | null, headshot?: string | null, shootsCatches?: string | null, heightCm?: number | null, weightKg?: number | null, birthDate?: string | null, birthCountry?: string | null }> };
+export type GetTeamRosterQuery = { __typename?: 'Query', teamRoster: Array<{ __typename?: 'Player', id: number, firstName: string, lastName: string, positionCode: PositionCode, sweaterNumber?: number | null, headshot?: string | null, shootsCatches?: string | null, heightCm?: number | null, weightKg?: number | null, birthCountry?: string | null }> };
 
 export type GetTeamSkaterStatsQueryVariables = Exact<{
   teamId: Scalars['Int']['input'];
 }>;
 
 
-export type GetTeamSkaterStatsQuery = { __typename?: 'Query', teamSkaterStats: Array<{ __typename?: 'SkaterSeasonStats', playerId: number, firstName: string, lastName: string, headshot?: string | null, positionCode: PositionCode, gamesPlayed: number, goals: number, assists: number, points: number, plusMinus: number, penaltyMinutes: number, powerPlayGoals: number, shorthandedGoals: number, gameWinningGoals: number, shots: number, shootingPctg?: number | null, avgTimeOnIce?: number | null, faceoffWinPctg?: number | null }> };
+export type GetTeamSkaterStatsQuery = { __typename?: 'Query', teamSkaterStats: Array<{ __typename?: 'SkaterSeasonStats', playerId: number, firstName: string, lastName: string, headshot?: string | null, positionCode: PositionCode, gamesPlayed: number, goals: number, assists: number, points: number, plusMinus: number, penaltyMinutes: number, powerPlayGoals: number, shorthandedGoals: number, gameWinningGoals: number, shots: number, shootingPctg?: number | null, avgTimeOnIce?: number | null }> };
 
 export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -599,11 +599,9 @@ export const GetTeamGamesDocument = gql`
   teamGames(teamId: $teamId, limit: $limit) {
     id
     gameDate
-    startTimeUTC
     gameState
     venue
     homeTeamId
-    awayTeamId
     homeTeamName
     homeTeamLogo
     awayTeamName
@@ -693,7 +691,6 @@ export const GetTeamRosterDocument = gql`
     shootsCatches
     heightCm
     weightKg
-    birthDate
     birthCountry
   }
 }
@@ -741,7 +738,6 @@ export const GetTeamSkaterStatsDocument = gql`
     shots
     shootingPctg
     avgTimeOnIce
-    faceoffWinPctg
   }
 }
     `;

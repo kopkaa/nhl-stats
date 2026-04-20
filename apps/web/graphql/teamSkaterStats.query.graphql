@@ -17,6 +17,5 @@ query GetTeamSkaterStats($teamId: Int!) {
     shots
     shootingPctg
     avgTimeOnIce
-    faceoffWinPctg
   }
 }

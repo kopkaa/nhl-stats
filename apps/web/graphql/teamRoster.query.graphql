@@ -9,7 +9,6 @@ query GetTeamRoster($teamId: Int!) {
     shootsCatches
     heightCm
     weightKg
-    birthDate
     birthCountry
   }
 }

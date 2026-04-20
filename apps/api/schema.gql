@@ -209,10 +209,10 @@ type Query {
   ): [Game!]!
 
   """Top skaters by goals, assists, and points"""
-  skaterLeaders(limit: Int = 10): SkaterLeaders!
+  skaterLeaders(limit: Int! = 10): SkaterLeaders!
 
   """Top goalies by wins, save percentage, and shutouts"""
-  goalieLeaders(limit: Int = 10): GoalieLeaders!
+  goalieLeaders(limit: Int! = 10): GoalieLeaders!
 }
 
 type Mutation {

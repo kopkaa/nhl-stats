@@ -58,12 +58,12 @@ const positionOf = (entry: LeaderEntry) =>
               v-if="entry.teamLogo"
               :src="entry.teamLogo"
               :alt="entry.teamName"
-              class="w-3 h-3 object-contain"
+              class="w-4 h-4 object-contain shrink-0"
             />
-            <span class="text-gray-600 text-[0.6rem]">{{ entry.teamName }}</span>
+            <span class="text-gray-400 text-[0.7rem] truncate">{{ entry.teamName }}</span>
             <template v-if="positionOf(entry)">
-              <span class="text-gray-700 text-[0.6rem]">&middot;</span>
-              <span class="text-gray-600 text-[0.6rem]">{{ positionOf(entry) }}</span>
+              <span class="text-gray-600 text-[0.7rem]">&middot;</span>
+              <span class="text-gray-500 text-[0.7rem]">{{ positionOf(entry) }}</span>
             </template>
           </div>
         </div>

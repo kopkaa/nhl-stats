@@ -44,7 +44,6 @@ const activeTab = ref<Tab>('overview');
     <div v-else-if="!team" class="py-20 text-center text-gray-500">Team not found</div>
 
     <template v-else>
-      <!-- Header -->
       <div class="flex items-center gap-5 mb-8">
         <img v-if="team.logo" :src="team.logo" :alt="team.fullName" class="w-16 h-16 object-contain" />
         <div>
@@ -70,7 +69,6 @@ const activeTab = ref<Tab>('overview');
         </div>
       </div>
 
-      <!-- Tabs -->
       <div class="flex border-b border-white/[0.08] mb-6">
         <button
           v-for="tab in (['overview', 'roster', 'stats', 'schedule'] as Tab[])"
@@ -88,7 +86,6 @@ const activeTab = ref<Tab>('overview');
         </button>
       </div>
 
-      <!-- Tab Content -->
       <TeamOverview v-if="activeTab === 'overview'" :skaters="skaterStats" :goalies="goalieStats" :games="gamesResult?.teamGames ?? []" :team-id="teamId" />
       <TeamRoster v-else-if="activeTab === 'roster'" :players="rosterResult?.teamRoster ?? []" />
       <TeamStats v-else-if="activeTab === 'stats'" :skaters="skaterStats" :goalies="goalieStats" />

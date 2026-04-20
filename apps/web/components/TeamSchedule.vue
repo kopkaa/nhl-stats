@@ -46,7 +46,7 @@ function opponentInfo(game: Game) {
   <div>
     <!-- Recent Results -->
     <div v-if="recentGames.length" class="mb-8">
-      <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Recent Results</h3>
+      <h3 class="section-label mb-3">Recent Results</h3>
       <div class="flex flex-col gap-1.5">
         <div
           v-for="game in recentGames"
@@ -74,7 +74,7 @@ function opponentInfo(game: Game) {
 
     <!-- Upcoming -->
     <div v-if="upcomingGames.length">
-      <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3">Upcoming</h3>
+      <h3 class="section-label mb-3">Upcoming</h3>
       <div class="flex flex-col gap-1.5">
         <div
           v-for="game in upcomingGames"

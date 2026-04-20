@@ -6,6 +6,38 @@ body {
   @apply bg-gray-950 text-gray-100;
 }
 
+@layer components {
+  /* ── Section headings ── */
+  .section-label {
+    @apply text-[0.7rem] font-semibold text-gray-400 uppercase tracking-widest;
+  }
+
+  /* ── Stat display block (value + label under) ── */
+  .stat-group {
+    @apply flex items-center gap-4 tabular-nums text-xs;
+  }
+
+  .stat-block {
+    @apply flex flex-col items-center leading-tight;
+  }
+
+  .stat-value {
+    @apply text-gray-300 text-sm font-medium tabular-nums;
+  }
+
+  .stat-value--primary {
+    @apply text-white text-sm font-bold tabular-nums;
+  }
+
+  .stat-value--muted {
+    @apply text-gray-400 text-sm tabular-nums;
+  }
+
+  .stat-label {
+    @apply text-[0.65rem] text-gray-500 uppercase tracking-wider font-medium mt-0.5;
+  }
+}
+
 /* ── Shared DataTable base ── */
 .nhl-dt :deep(.p-datatable-table-container) {
   overflow-x: auto;

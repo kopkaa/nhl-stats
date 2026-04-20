@@ -63,7 +63,7 @@ const goalieCategories = computed(() => {
 
     <template v-else>
       <section class="mb-8">
-        <h2 class="text-[0.7rem] font-semibold text-gray-500 uppercase tracking-widest mb-4">Skaters</h2>
+        <h2 class="section-label mb-4">Skaters</h2>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <LeaderCard
             v-for="category in skaterCategories"
@@ -75,7 +75,7 @@ const goalieCategories = computed(() => {
       </section>
 
       <section>
-        <h2 class="text-[0.7rem] font-semibold text-gray-500 uppercase tracking-widest mb-4">Goalies</h2>
+        <h2 class="section-label mb-4">Goalies</h2>
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
           <LeaderCard
             v-for="category in goalieCategories"

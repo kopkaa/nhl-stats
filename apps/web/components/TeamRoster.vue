@@ -28,8 +28,8 @@ const rosterByPosition = computed(() =>
   <div class="flex flex-col gap-6">
     <div v-for="group in rosterByPosition" :key="group.label">
       <div class="flex items-center gap-2 mb-2">
-        <h3 class="text-[0.7rem] font-semibold text-gray-500 uppercase tracking-widest m-0">{{ group.label }}</h3>
-        <span class="text-[0.6rem] text-gray-600 bg-white/5 px-1.5 py-px rounded tabular-nums">{{ group.players.length }}</span>
+        <h3 class="section-label m-0">{{ group.label }}</h3>
+        <span class="text-[0.65rem] text-gray-400 bg-white/5 px-1.5 py-px rounded tabular-nums">{{ group.players.length }}</span>
       </div>
       <div class="bg-[rgb(17_17_27)] border border-white/[0.07] rounded-lg overflow-hidden">
         <DataTable :value="group.players" size="small" class="nhl-dt nhl-dt--name-col-2">

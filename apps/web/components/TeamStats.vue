@@ -13,7 +13,7 @@ defineProps<{
 <template>
   <div>
     <!-- Skaters -->
-    <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Skaters</h3>
+    <h3 class="section-label mb-2">Skaters</h3>
     <div class="bg-[rgb(17_17_27)] border border-white/[0.07] rounded-lg overflow-hidden mb-6">
       <DataTable :value="skaters" size="small" class="nhl-dt nhl-dt--name-col-1">
         <Column field="lastName" header="Player" sortable>
@@ -116,7 +116,7 @@ defineProps<{
     </div>
 
     <!-- Goalies -->
-    <h3 class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Goalies</h3>
+    <h3 class="section-label mb-2">Goalies</h3>
     <div class="bg-[rgb(17_17_27)] border border-white/[0.07] rounded-lg overflow-hidden">
       <DataTable :value="goalies" size="small" class="nhl-dt nhl-dt--name-col-1">
         <Column field="lastName" header="Player" sortable>

@@ -13,6 +13,12 @@ export default defineNuxtPlugin((nuxtApp) => {
   const apolloClient = new ApolloClient({
     link: httpLink,
     cache: new InMemoryCache(),
+    defaultOptions: {
+      watchQuery: {
+        fetchPolicy: 'cache-and-network',
+        nextFetchPolicy: 'cache-first',
+      },
+    },
   });
 
   nuxtApp.vueApp.provide(DefaultApolloClient, apolloClient);

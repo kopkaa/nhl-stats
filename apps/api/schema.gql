@@ -53,6 +53,8 @@ enum StreakCode {
 type Player {
   id: Int!
   teamId: Int!
+  teamName: String
+  teamLogo: String
   firstName: String!
   lastName: String!
   positionCode: PositionCode!
@@ -63,6 +65,28 @@ type Player {
   weightKg: Int
   birthDate: String
   birthCountry: String
+}
+
+type PlayerGameLogEntry {
+  gameId: Int!
+  gameDate: String!
+  teamAbbrev: String
+  opponentAbbrev: String
+  homeRoadFlag: String
+  toi: String
+  goals: Int
+  assists: Int
+  points: Int
+  plusMinus: Int
+  shots: Int
+  pim: Int
+  powerPlayGoals: Int
+  gameWinningGoals: Int
+  decision: String
+  saves: Int
+  shotsAgainst: Int
+  goalsAgainst: Int
+  savePctg: Float
 }
 
 enum PositionCode {
@@ -198,6 +222,18 @@ type Query {
 
   """Current season stats for goalies on a team"""
   teamGoalieStats(teamId: Int!): [GoalieSeasonStats!]!
+
+  """Single player by id"""
+  player(id: Int!): Player
+
+  """Season stats for a skater"""
+  playerSkaterStats(playerId: Int!): [SkaterSeasonStats!]!
+
+  """Season stats for a goalie"""
+  playerGoalieStats(playerId: Int!): [GoalieSeasonStats!]!
+
+  """Current-season game log for a player"""
+  playerGameLog(playerId: Int!, limit: Int = 10): [PlayerGameLogEntry!]!
 
   """Games for a specific team"""
   teamGames(teamId: Int!, limit: Int = 50): [Game!]!

@@ -1,0 +1,78 @@
+query GetPlayer($id: Int!) {
+  player(id: $id) {
+    id
+    teamId
+    teamName
+    teamLogo
+    firstName
+    lastName
+    positionCode
+    sweaterNumber
+    headshot
+    shootsCatches
+    heightCm
+    weightKg
+    birthDate
+    birthCountry
+  }
+}
+
+query GetPlayerSkaterStats($playerId: Int!) {
+  playerSkaterStats(playerId: $playerId) {
+    season
+    gamesPlayed
+    goals
+    assists
+    points
+    plusMinus
+    penaltyMinutes
+    powerPlayGoals
+    shorthandedGoals
+    gameWinningGoals
+    shots
+    shootingPctg
+    avgTimeOnIce
+    faceoffWinPctg
+  }
+}
+
+query GetPlayerGoalieStats($playerId: Int!) {
+  playerGoalieStats(playerId: $playerId) {
+    season
+    gamesPlayed
+    gamesStarted
+    wins
+    losses
+    otLosses
+    goalsAgainstAvg
+    savePctg
+    shutouts
+    shotsAgainst
+    saves
+    goalsAgainst
+  }
+}
+
+query GetPlayerGameLog($playerId: Int!, $limit: Int) {
+  playerGameLog(playerId: $playerId, limit: $limit) {
+    gameId
+    gameDate
+    teamAbbrev
+    opponentAbbrev
+    homeRoadFlag
+    toi
+    goals
+    assists
+    points
+    plusMinus
+    shots
+    pim
+    powerPlayGoals
+    gameWinningGoals
+    decision
+    saves
+    shotsAgainst
+    goalsAgainst
+    savePctg
+  }
+}

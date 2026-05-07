@@ -69,3 +69,31 @@ export interface NhlClubStatsResponse {
   skaters: NhlSkaterStats[];
   goalies: NhlGoalieStats[];
 }
+
+export interface NhlGameLogEntry {
+  gameId: number;
+  teamAbbrev: string;
+  homeRoadFlag: string;
+  gameDate: string;
+  opponentAbbrev: string;
+  toi: string;
+  // skater
+  goals?: number;
+  assists?: number;
+  points?: number;
+  plusMinus?: number;
+  shots?: number;
+  pim?: number;
+  powerPlayGoals?: number;
+  gameWinningGoals?: number;
+  // goalie
+  decision?: string;
+  saves?: number;
+  shotsAgainst?: number;
+  goalsAgainst?: number;
+  savePctg?: number;
+}
+
+export interface NhlGameLogResponse {
+  gameLog: NhlGameLogEntry[];
+}

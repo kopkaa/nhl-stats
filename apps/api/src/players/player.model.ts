@@ -17,6 +17,12 @@ export class Player {
   @Field(() => Int)
   teamId!: number;
 
+  @Field({ nullable: true })
+  teamName?: string;
+
+  @Field({ nullable: true })
+  teamLogo?: string;
+
   @Field()
   firstName!: string;
 
@@ -46,6 +52,68 @@ export class Player {
 
   @Field({ nullable: true })
   birthCountry?: string;
+}
+
+@ObjectType()
+export class PlayerGameLogEntry {
+  @Field(() => Int)
+  gameId!: number;
+
+  @Field()
+  gameDate!: string;
+
+  @Field({ nullable: true })
+  teamAbbrev?: string;
+
+  @Field({ nullable: true })
+  opponentAbbrev?: string;
+
+  @Field({ nullable: true })
+  homeRoadFlag?: string;
+
+  @Field({ nullable: true })
+  toi?: string;
+
+  // Skater fields
+  @Field(() => Int, { nullable: true })
+  goals?: number;
+
+  @Field(() => Int, { nullable: true })
+  assists?: number;
+
+  @Field(() => Int, { nullable: true })
+  points?: number;
+
+  @Field(() => Int, { nullable: true })
+  plusMinus?: number;
+
+  @Field(() => Int, { nullable: true })
+  shots?: number;
+
+  @Field(() => Int, { nullable: true })
+  pim?: number;
+
+  @Field(() => Int, { nullable: true })
+  powerPlayGoals?: number;
+
+  @Field(() => Int, { nullable: true })
+  gameWinningGoals?: number;
+
+  // Goalie fields
+  @Field({ nullable: true })
+  decision?: string;
+
+  @Field(() => Int, { nullable: true })
+  saves?: number;
+
+  @Field(() => Int, { nullable: true })
+  shotsAgainst?: number;
+
+  @Field(() => Int, { nullable: true })
+  goalsAgainst?: number;
+
+  @Field(() => Float, { nullable: true })
+  savePctg?: number;
 }
 
 @ObjectType()

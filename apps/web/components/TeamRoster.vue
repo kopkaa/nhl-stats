@@ -49,7 +49,10 @@ const rosterByPosition = computed(() =>
                   class="w-7 h-7 rounded-full object-cover bg-[rgb(31_31_46)] border border-white/[0.08]"
                 />
                 <div v-else class="w-7 h-7 rounded-full bg-[rgb(31_31_46)] border border-white/[0.06]" />
-                <span class="text-white font-medium">{{ player.firstName }} {{ player.lastName }}</span>
+                <NuxtLink
+                  :to="`/players/${player.id}`"
+                  class="text-white font-medium hover:text-gray-300 transition-colors"
+                >{{ player.firstName }} {{ player.lastName }}</NuxtLink>
               </div>
             </template>
           </Column>

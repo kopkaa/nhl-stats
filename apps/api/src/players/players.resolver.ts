@@ -1,7 +1,7 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
 import { PlayersService } from './players.service';
 import { PlayersSyncService } from './players-sync.service';
-import { Player, SkaterSeasonStats, GoalieSeasonStats } from './player.model';
+import { Player, SkaterSeasonStats, GoalieSeasonStats, PlayerGameLogEntry } from './player.model';
 
 @Resolver()
 export class PlayersResolver {
@@ -27,6 +27,29 @@ export class PlayersResolver {
   })
   teamGoalieStats(@Args('teamId', { type: () => Int }) teamId: number) {
     return this.playersService.teamGoalieStats(teamId);
+  }
+
+  @Query(() => Player, { nullable: true, description: 'Single player by id' })
+  player(@Args('id', { type: () => Int }) id: number) {
+    return this.playersService.findOne(id);
+  }
+
+  @Query(() => [SkaterSeasonStats], { description: 'Season stats for a skater' })
+  playerSkaterStats(@Args('playerId', { type: () => Int }) playerId: number) {
+    return this.playersService.playerSkaterStats(playerId);
+  }
+
+  @Query(() => [GoalieSeasonStats], { description: 'Season stats for a goalie' })
+  playerGoalieStats(@Args('playerId', { type: () => Int }) playerId: number) {
+    return this.playersService.playerGoalieStats(playerId);
+  }
+
+  @Query(() => [PlayerGameLogEntry], { description: 'Current-season game log for a player' })
+  playerGameLog(
+    @Args('playerId', { type: () => Int }) playerId: number,
+    @Args('limit', { type: () => Int, defaultValue: 10 }) limit: number,
+  ) {
+    return this.playersService.playerGameLog(playerId, limit);
   }
 
   @Mutation(() => Int, {

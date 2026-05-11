@@ -67,6 +67,14 @@ type Player {
   birthCountry: String
 }
 
+enum PositionCode {
+  C
+  L
+  R
+  D
+  G
+}
+
 type PlayerGameLogEntry {
   gameId: Int!
   gameDate: String!
@@ -87,14 +95,6 @@ type PlayerGameLogEntry {
   shotsAgainst: Int
   goalsAgainst: Int
   savePctg: Float
-}
-
-enum PositionCode {
-  C
-  L
-  R
-  D
-  G
 }
 
 type SkaterSeasonStats {
@@ -233,7 +233,7 @@ type Query {
   playerGoalieStats(playerId: Int!): [GoalieSeasonStats!]!
 
   """Current-season game log for a player"""
-  playerGameLog(playerId: Int!, limit: Int = 10): [PlayerGameLogEntry!]!
+  playerGameLog(playerId: Int!, limit: Int! = 10): [PlayerGameLogEntry!]!
 
   """Games for a specific team"""
   teamGames(teamId: Int!, limit: Int = 50): [Game!]!

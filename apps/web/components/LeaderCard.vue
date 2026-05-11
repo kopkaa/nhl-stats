@@ -24,9 +24,10 @@ const positionOf = (entry: LeaderEntry) =>
       {{ title }}
     </h3>
     <div class="flex flex-col">
-      <div
+      <NuxtLink
         v-for="(entry, index) in entries"
         :key="entry.playerId"
+        :to="`/players/${entry.playerId}`"
         class="flex items-center gap-2.5 px-3 transition-colors hover:bg-white/[0.03]"
         :class="[
           index === 0 ? 'py-3 bg-white/[0.04]' : 'py-2',
@@ -73,7 +74,7 @@ const positionOf = (entry: LeaderEntry) =>
         >
           {{ format(entry.value) }}
         </span>
-      </div>
+      </NuxtLink>
     </div>
   </div>
 </template>

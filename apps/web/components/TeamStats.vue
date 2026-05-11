@@ -18,15 +18,15 @@ defineProps<{
       <DataTable :value="skaters" size="small" class="nhl-dt nhl-dt--name-col-1">
         <Column field="lastName" header="Player" sortable>
           <template #body="{ data: skater }">
-            <div class="flex items-center gap-2">
+            <NuxtLink :to="`/players/${skater.playerId}`" class="flex items-center gap-2 no-underline">
               <img
                 v-if="skater.headshot"
                 :src="skater.headshot"
                 :alt="`${skater.firstName} ${skater.lastName}`"
                 class="w-6 h-6 rounded-full object-cover bg-gray-800"
               />
-              <span class="text-white font-medium">{{ skater.firstName[0] }}. {{ skater.lastName }}</span>
-            </div>
+              <span class="text-white font-medium hover:text-gray-300 transition-colors">{{ skater.firstName[0] }}. {{ skater.lastName }}</span>
+            </NuxtLink>
           </template>
         </Column>
 
@@ -121,15 +121,15 @@ defineProps<{
       <DataTable :value="goalies" size="small" class="nhl-dt nhl-dt--name-col-1">
         <Column field="lastName" header="Player" sortable>
           <template #body="{ data: goalie }">
-            <div class="flex items-center gap-2">
+            <NuxtLink :to="`/players/${goalie.playerId}`" class="flex items-center gap-2 no-underline">
               <img
                 v-if="goalie.headshot"
                 :src="goalie.headshot"
                 :alt="`${goalie.firstName} ${goalie.lastName}`"
                 class="w-6 h-6 rounded-full object-cover bg-gray-800"
               />
-              <span class="text-white font-medium">{{ goalie.firstName[0] }}. {{ goalie.lastName }}</span>
-            </div>
+              <span class="text-white font-medium hover:text-gray-300 transition-colors">{{ goalie.firstName[0] }}. {{ goalie.lastName }}</span>
+            </NuxtLink>
           </template>
         </Column>
 

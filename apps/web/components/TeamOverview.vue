@@ -74,10 +74,11 @@ function opponentInfo(game: Game) {
       <div v-if="topForwards.length">
         <h3 class="section-label mb-3">Top Forwards</h3>
         <div class="flex flex-col gap-1">
-          <div
+          <NuxtLink
             v-for="(forward, index) in topForwards"
             :key="forward.playerId"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:bg-white/[0.03]"
+            :to="`/players/${forward.playerId}`"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:bg-white/[0.05] no-underline"
             :class="index === 0 ? 'bg-white/[0.04]' : ''"
           >
             <span class="text-[0.7rem] text-gray-500 w-4 tabular-nums text-right">{{ index + 1 }}</span>
@@ -110,7 +111,7 @@ function opponentInfo(game: Game) {
                 <span class="stat-label">GP</span>
               </div>
             </div>
-          </div>
+          </NuxtLink>
         </div>
       </div>
 
@@ -118,10 +119,11 @@ function opponentInfo(game: Game) {
       <div v-if="topDefensemen.length">
         <h3 class="section-label mb-3">Top Defensemen</h3>
         <div class="flex flex-col gap-1">
-          <div
+          <NuxtLink
             v-for="(defenseman, index) in topDefensemen"
             :key="defenseman.playerId"
-            class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:bg-white/[0.03]"
+            :to="`/players/${defenseman.playerId}`"
+            class="flex items-center gap-3 px-3 py-2 rounded-lg transition-colors hover:bg-white/[0.05] no-underline"
             :class="index === 0 ? 'bg-white/[0.04]' : ''"
           >
             <span class="text-[0.7rem] text-gray-500 w-4 tabular-nums text-right">{{ index + 1 }}</span>
@@ -154,14 +156,14 @@ function opponentInfo(game: Game) {
                 <span class="stat-label">GP</span>
               </div>
             </div>
-          </div>
+          </NuxtLink>
         </div>
       </div>
 
       <!-- Top Goalie -->
       <div v-if="topGoalie">
         <h3 class="section-label mb-3">Starting Goalie</h3>
-        <div class="flex items-center gap-3 px-3 py-3 rounded-lg bg-white/[0.04]">
+        <NuxtLink :to="`/players/${topGoalie.playerId}`" class="flex items-center gap-3 px-3 py-3 rounded-lg bg-white/[0.04] hover:bg-white/[0.07] transition-colors no-underline">
           <img
             v-if="topGoalie.headshot"
             :src="topGoalie.headshot"
@@ -190,7 +192,7 @@ function opponentInfo(game: Game) {
               <span class="stat-label">SO</span>
             </div>
           </div>
-        </div>
+        </NuxtLink>
       </div>
     </div>
 

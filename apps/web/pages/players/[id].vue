@@ -277,7 +277,11 @@ function positionLabel(code: PositionCode): string {
 
       <!-- Game Log -->
       <template v-else-if="activeTab === 'games'">
-        <div v-if="gameLog.length" class="bg-[rgb(17_17_27)] border border-white/[0.07] rounded-lg overflow-hidden">
+        <div v-if="gameLog.length">
+        <div class="mb-6">
+          <PlayerGameChart :entries="gameLog" :is-goalie="isGoalie" />
+        </div>
+        <div class="bg-[rgb(17_17_27)] border border-white/[0.07] rounded-lg overflow-hidden">
           <DataTable :value="gameLog" size="small" class="nhl-dt">
             <Column field="gameDate" header="Date">
               <template #body="{ data: entry }">
@@ -368,6 +372,7 @@ function positionLabel(code: PositionCode): string {
               </template>
             </Column>
           </DataTable>
+        </div>
         </div>
         <div v-else class="py-12 text-center text-gray-600 text-sm">No game log available</div>
       </template>

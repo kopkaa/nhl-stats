@@ -1,0 +1,17 @@
+query GetGamesByDate($date: String!) {
+  gamesByDate(date: $date) {
+    id
+    gameDate
+    startTimeUTC
+    gameState
+    venue
+    homeTeamId
+    homeTeamName
+    homeTeamLogo
+    homeScore
+    awayTeamId
+    awayTeamName
+    awayTeamLogo
+    awayScore
+  }
+}

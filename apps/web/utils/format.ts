@@ -21,6 +21,11 @@ export function formatGameDate(dateStr: string): string {
   return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
+export function formatGameTime(utc: string | null | undefined): string {
+  if (!utc) return '';
+  return new Date(utc).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
+}
+
 export function ordinalSuffix(n: number): string {
   if (n % 100 >= 11 && n % 100 <= 13) return 'th';
   switch (n % 10) {

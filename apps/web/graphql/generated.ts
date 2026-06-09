@@ -208,7 +208,7 @@ export type QueryPlayerArgs = {
 
 
 export type QueryPlayerGameLogArgs = {
-  limit?: InputMaybe<Scalars['Int']['input']>;
+  limit?: Scalars['Int']['input'];
   playerId: Scalars['Int']['input'];
 };
 
@@ -343,6 +343,13 @@ export type Team = {
   triCode: Scalars['String']['output'];
 };
 
+export type GetGamesByDateQueryVariables = Exact<{
+  date: Scalars['String']['input'];
+}>;
+
+
+export type GetGamesByDateQuery = { __typename?: 'Query', gamesByDate: Array<{ __typename?: 'Game', id: number, gameDate: string, startTimeUTC?: string | null, gameState: GameState, venue?: string | null, homeTeamId: number, homeTeamName?: string | null, homeTeamLogo?: string | null, homeScore?: number | null, awayTeamId: number, awayTeamName?: string | null, awayTeamLogo?: string | null, awayScore?: number | null }> };
+
 export type GetGoalieLeadersQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
 }>;
@@ -442,6 +449,48 @@ export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetTeamsQuery = { __typename?: 'Query', teams: Array<{ __typename?: 'Team', id: number, fullName: string, triCode: string, logo?: string | null, conferenceName?: string | null, divisionName?: string | null }> };
 
 
+export const GetGamesByDateDocument = gql`
+    query GetGamesByDate($date: String!) {
+  gamesByDate(date: $date) {
+    id
+    gameDate
+    startTimeUTC
+    gameState
+    venue
+    homeTeamId
+    homeTeamName
+    homeTeamLogo
+    homeScore
+    awayTeamId
+    awayTeamName
+    awayTeamLogo
+    awayScore
+  }
+}
+    `;
+
+/**
+ * __useGetGamesByDateQuery__
+ *
+ * To run a query within a Vue component, call `useGetGamesByDateQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetGamesByDateQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the query
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useGetGamesByDateQuery({
+ *   date: // value for 'date'
+ * });
+ */
+export function useGetGamesByDateQuery(variables: GetGamesByDateQueryVariables | VueCompositionApi.Ref<GetGamesByDateQueryVariables> | ReactiveFunction<GetGamesByDateQueryVariables>, options: VueApolloComposable.UseQueryOptions<GetGamesByDateQuery, GetGamesByDateQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetGamesByDateQuery, GetGamesByDateQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetGamesByDateQuery, GetGamesByDateQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<GetGamesByDateQuery, GetGamesByDateQueryVariables>(GetGamesByDateDocument, variables, options);
+}
+export function useGetGamesByDateLazyQuery(variables?: GetGamesByDateQueryVariables | VueCompositionApi.Ref<GetGamesByDateQueryVariables> | ReactiveFunction<GetGamesByDateQueryVariables>, options: VueApolloComposable.UseQueryOptions<GetGamesByDateQuery, GetGamesByDateQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetGamesByDateQuery, GetGamesByDateQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetGamesByDateQuery, GetGamesByDateQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<GetGamesByDateQuery, GetGamesByDateQueryVariables>(GetGamesByDateDocument, variables, options);
+}
+export type GetGamesByDateQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetGamesByDateQuery, GetGamesByDateQueryVariables>;
 export const GetGoalieLeadersDocument = gql`
     query GetGoalieLeaders($limit: Int) {
   goalieLeaders(limit: $limit) {

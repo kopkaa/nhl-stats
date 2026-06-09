@@ -4,6 +4,7 @@ const collapsed = useState('sidebar-collapsed', () => false);
 const navItems = [
   { label: 'Dashboard', icon: 'pi pi-home', to: '/' },
   { label: 'Teams', icon: 'pi pi-users', to: '/teams' },
+  { label: 'Games', icon: 'pi pi-calendar', to: '/games' },
   { label: 'Standings', icon: 'pi pi-chart-bar', to: '/standings' },
   { label: 'Leaders', icon: 'pi pi-trophy', to: '/leaders' },
 ];

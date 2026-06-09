@@ -1,6 +1,5 @@
 <script setup lang="ts">
-import { useGetTeamsQuery } from '~/graphql/generated';
-import { Conference, Division } from '@nhl-app/shared';
+import { useGetTeamsQuery, Conference, Division } from '~/graphql/generated';
 
 const { result, loading, error } = useGetTeamsQuery();
 

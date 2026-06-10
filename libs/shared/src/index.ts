@@ -33,6 +33,13 @@ export enum GameState {
   CRIT = 'CRIT',
 }
 
+export enum SeasonPhase {
+  PRE = 'PRE',
+  REGULAR = 'REGULAR',
+  PLAYOFFS = 'PLAYOFFS',
+  OFFSEASON = 'OFFSEASON',
+}
+
 export const PLAYOFF_SPOTS_PER_CONFERENCE = 8;
 export const PLAYOFF_SPOTS_TOTAL = 16;
 

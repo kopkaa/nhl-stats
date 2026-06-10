@@ -28,6 +28,19 @@ export const teams = pgTable('teams', {
     .notNull(),
 });
 
+export const seasons = pgTable('seasons', {
+  id: varchar('id', { length: 7 }).primaryKey(),
+  nhlSeasonId: integer('nhl_season_id').notNull(),
+  startDate: varchar('start_date', { length: 10 }).notNull(),
+  regularEndDate: varchar('regular_end_date', { length: 10 }),
+  endDate: varchar('end_date', { length: 10 }),
+  numTeams: integer('num_teams'),
+  championTeamId: integer('champion_team_id').references(() => teams.id),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+});
+
 export const standings = pgTable(
   'standings',
   {
@@ -77,7 +90,7 @@ export const skaterSeasonStats = pgTable(
   'skater_season_stats',
   {
     playerId: integer('player_id').references(() => players.id).notNull(),
-    season: varchar('season', { length: 7 }).notNull(),
+    season: varchar('season', { length: 7 }).references(() => seasons.id).notNull(),
     gamesPlayed: integer('games_played').notNull().default(0),
     goals: integer('goals').notNull().default(0),
     assists: integer('assists').notNull().default(0),
@@ -102,7 +115,7 @@ export const goalieSeasonStats = pgTable(
   'goalie_season_stats',
   {
     playerId: integer('player_id').references(() => players.id).notNull(),
-    season: varchar('season', { length: 7 }).notNull(),
+    season: varchar('season', { length: 7 }).references(() => seasons.id).notNull(),
     gamesPlayed: integer('games_played').notNull().default(0),
     gamesStarted: integer('games_started').notNull().default(0),
     wins: integer('wins').notNull().default(0),

@@ -47,7 +47,7 @@ export const standings = pgTable(
     teamId: integer('team_id')
       .references(() => teams.id)
       .notNull(),
-    season: varchar('season', { length: 7 }).notNull(),
+    season: varchar('season', { length: 7 }).references(() => seasons.id).notNull(),
     gamesPlayed: integer('games_played').notNull().default(0),
     wins: integer('wins').notNull().default(0),
     losses: integer('losses').notNull().default(0),
@@ -136,7 +136,7 @@ export const goalieSeasonStats = pgTable(
 
 export const games = pgTable('games', {
   id: integer('id').primaryKey(),
-  season: varchar('season', { length: 7 }).notNull(),
+  season: varchar('season', { length: 7 }).references(() => seasons.id).notNull(),
   gameType: integer('game_type').notNull(),
   gameDate: varchar('game_date', { length: 10 }).notNull(),
   startTimeUTC: varchar('start_time_utc', { length: 30 }),

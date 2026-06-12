@@ -21,6 +21,11 @@ export class SeasonsService {
     return this.toSeasons(rows).find((season) => season.isCurrent);
   }
 
+  getCurrentSeasonId(): Promise<string | null> {
+    const today = new Date().toISOString().slice(0, 10);
+    return this.resolveCurrentIdQuery(today);
+  }
+
   async findOne(id: string): Promise<Season | undefined> {
     const today = new Date().toISOString().slice(0, 10);
     const [row] = await this.databaseService.db

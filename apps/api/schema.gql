@@ -50,9 +50,28 @@ enum StreakCode {
   OT
 }
 
+type Season {
+  id: String!
+  nhlSeasonId: Int!
+  startDate: String!
+  regularEndDate: String
+  endDate: String
+  phase: SeasonPhase!
+  numTeams: Int
+  championTeamId: Int
+  isCurrent: Boolean!
+}
+
+enum SeasonPhase {
+  PRE
+  REGULAR
+  PLAYOFFS
+  OFFSEASON
+}
+
 type Player {
   id: Int!
-  teamId: Int!
+  teamId: Int
   teamName: String
   teamLogo: String
   firstName: String!
@@ -235,6 +254,15 @@ type Query {
   """Current-season game log for a player"""
   playerGameLog(playerId: Int!, limit: Int! = 10): [PlayerGameLogEntry!]!
 
+  """All seasons (newest first) with computed phase"""
+  seasons: [Season!]!
+
+  """The current season resolved from today's date"""
+  currentSeason: Season
+
+  """A single season by id (format YYYY-YY)"""
+  season(id: String!): Season
+
   """Games for a specific team"""
   teamGames(teamId: Int!, limit: Int = 50): [Game!]!
 
@@ -260,6 +288,9 @@ type Mutation {
 
   """Sync all team rosters and player stats from NHL API"""
   syncRosters: Int!
+
+  """Sync the season catalog (ids + date windows) from NHL API"""
+  syncSeasons: Int!
 
   """Sync all team schedules from NHL API"""
   syncGames: Int!

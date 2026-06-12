@@ -14,8 +14,8 @@ export class Player {
   @Field(() => Int)
   id!: number;
 
-  @Field(() => Int)
-  teamId!: number;
+  @Field(() => Int, { nullable: true })
+  teamId?: number;
 
   @Field({ nullable: true })
   teamName?: string;

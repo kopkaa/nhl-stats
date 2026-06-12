@@ -6,6 +6,7 @@ import {
   DatabaseService,
   teams,
   players,
+  rosters,
   skaterSeasonStats,
   goalieSeasonStats,
 } from '../database';
@@ -33,70 +34,62 @@ export class PlayersSyncService {
       .select({ id: teams.id, triCode: teams.triCode })
       .from(teams);
 
-    const rosterResults = await Promise.allSettled(
-      dbTeams.map((t) => this.syncTeamRoster(t.id, t.triCode)),
+    const results = await Promise.allSettled(
+      dbTeams.map((team) => this.syncTeam(team.id, team.triCode)),
     );
 
-    const totalPlayers = rosterResults.reduce((sum, r) => {
-      if (r.status === 'fulfilled') return sum + r.value;
-      this.logger.warn(`Roster sync failed: ${r.reason}`);
+    const totalPlayers = results.reduce((sum, result, index) => {
+      if (result.status === 'fulfilled') return sum + result.value;
+      this.logger.warn(
+        `Team sync failed for ${dbTeams[index].triCode}: ${result.reason}`,
+      );
       return sum;
     }, 0);
 
-    const statsResults = await Promise.allSettled(
-      dbTeams.map((t) => this.syncTeamStats(t.triCode)),
-    );
-
-    statsResults.forEach((r, i) => {
-      if (r.status === 'rejected')
-        this.logger.warn(
-          `Stats sync failed for ${dbTeams[i].triCode}: ${r.reason}`,
-        );
-    });
-
     await this.cacheService.delByPrefix('players:');
+    await this.cacheService.delByPrefix('leaders:');
     this.logger.log(
       `Synced ${totalPlayers} players across ${dbTeams.length} teams.`,
     );
     return totalPlayers;
   }
 
-  private async getKnownPlayerIds(): Promise<Set<number>> {
-    const rows = await this.databaseService.db
-      .select({ id: players.id })
-      .from(players);
-    return new Set(rows.map((row) => row.id));
+  private async syncTeam(teamId: number, triCode: string): Promise<number> {
+    const [roster, clubStats] = await Promise.all([
+      this.nhlApi.getWeb<NhlRosterResponse>(`/roster/${triCode}/current`),
+      this.nhlApi.getWeb<NhlClubStatsResponse>(`/club-stats/${triCode}/now`),
+    ]);
+
+    const rosterPlayers = [
+      ...roster.forwards,
+      ...roster.defensemen,
+      ...roster.goalies,
+    ];
+    if (rosterPlayers.length === 0) return 0;
+
+    const season = formatSeason(clubStats.season);
+    const rosterPlayerIds = new Set(rosterPlayers.map((player) => player.id));
+
+    await this.upsertPlayers(rosterPlayers);
+    await this.upsertRoster(rosterPlayers, teamId, season);
+    await this.upsertSkaterStats(clubStats, season, rosterPlayerIds);
+    await this.upsertGoalieStats(clubStats, season, rosterPlayerIds);
+
+    return rosterPlayers.length;
   }
 
-  private async syncTeamRoster(
-    teamId: number,
-    triCode: string,
-  ): Promise<number> {
-    const data = await this.nhlApi.getWeb<NhlRosterResponse>(
-      `/roster/${triCode}/current`,
-    );
-
-    const allPlayers: NhlRosterPlayer[] = [
-      ...data.forwards,
-      ...data.defensemen,
-      ...data.goalies,
-    ];
-
-    if (allPlayers.length === 0) return 0;
-
-    const rows = allPlayers.map((p) => ({
-      id: p.id,
-      teamId,
-      firstName: p.firstName.default,
-      lastName: p.lastName.default,
-      positionCode: p.positionCode as PositionCode,
-      sweaterNumber: p.sweaterNumber,
-      headshot: p.headshot,
-      shootsCatches: p.shootsCatches,
-      heightCm: p.heightInCentimeters,
-      weightKg: p.weightInKilograms,
-      birthDate: p.birthDate,
-      birthCountry: p.birthCountry,
+  private async upsertPlayers(rosterPlayers: NhlRosterPlayer[]): Promise<void> {
+    const rows = rosterPlayers.map((player) => ({
+      id: player.id,
+      firstName: player.firstName.default,
+      lastName: player.lastName.default,
+      positionCode: player.positionCode as PositionCode,
+      headshot: player.headshot,
+      shootsCatches: player.shootsCatches,
+      heightCm: player.heightInCentimeters,
+      weightKg: player.weightInKilograms,
+      birthDate: player.birthDate,
+      birthCountry: player.birthCountry,
       updatedAt: new Date(),
     }));
 
@@ -106,11 +99,9 @@ export class PlayersSyncService {
       .onConflictDoUpdate({
         target: players.id,
         set: {
-          teamId: sql`excluded.team_id`,
           firstName: sql`excluded.first_name`,
           lastName: sql`excluded.last_name`,
           positionCode: sql`excluded.position_code`,
-          sweaterNumber: sql`excluded.sweater_number`,
           headshot: sql`excluded.headshot`,
           shootsCatches: sql`excluded.shoots_catches`,
           heightCm: sql`excluded.height_cm`,
@@ -120,104 +111,130 @@ export class PlayersSyncService {
           updatedAt: sql`excluded.updated_at`,
         },
       });
-
-    return allPlayers.length;
   }
 
-  private async syncTeamStats(triCode: string): Promise<void> {
-    const data = await this.nhlApi.getWeb<NhlClubStatsResponse>(
-      `/club-stats/${triCode}/now`,
-    );
+  private async upsertRoster(
+    rosterPlayers: NhlRosterPlayer[],
+    teamId: number,
+    season: string,
+  ): Promise<void> {
+    const rows = rosterPlayers.map((player) => ({
+      playerId: player.id,
+      teamId,
+      season,
+      sweaterNumber: player.sweaterNumber,
+      updatedAt: new Date(),
+    }));
 
-    const season = formatSeason(data.season);
-    const rosterPlayerIds = await this.getKnownPlayerIds();
+    await this.databaseService.db
+      .insert(rosters)
+      .values(rows)
+      .onConflictDoUpdate({
+        target: [rosters.playerId, rosters.teamId, rosters.season],
+        set: {
+          sweaterNumber: sql`excluded.sweater_number`,
+          updatedAt: sql`excluded.updated_at`,
+        },
+      });
+  }
 
-    if (data.skaters.length > 0) {
-      const skaterRows = data.skaters
-        .filter((skater) => rosterPlayerIds.has(skater.playerId))
-        .map((s) => ({
-        playerId: s.playerId,
+  private async upsertSkaterStats(
+    clubStats: NhlClubStatsResponse,
+    season: string,
+    rosterPlayerIds: Set<number>,
+  ): Promise<void> {
+    const rows = clubStats.skaters
+      .filter((skater) => rosterPlayerIds.has(skater.playerId))
+      .map((skater) => ({
+        playerId: skater.playerId,
         season,
-        gamesPlayed: s.gamesPlayed,
-        goals: s.goals,
-        assists: s.assists,
-        points: s.points,
-        plusMinus: s.plusMinus,
-        penaltyMinutes: s.penaltyMinutes,
-        powerPlayGoals: s.powerPlayGoals,
-        shorthandedGoals: s.shorthandedGoals,
-        gameWinningGoals: s.gameWinningGoals,
-        shots: s.shots,
-        shootingPctg: s.shootingPctg,
-        avgTimeOnIce: s.avgTimeOnIcePerGame,
-        faceoffWinPctg: s.faceoffWinPctg,
+        gamesPlayed: skater.gamesPlayed,
+        goals: skater.goals,
+        assists: skater.assists,
+        points: skater.points,
+        plusMinus: skater.plusMinus,
+        penaltyMinutes: skater.penaltyMinutes,
+        powerPlayGoals: skater.powerPlayGoals,
+        shorthandedGoals: skater.shorthandedGoals,
+        gameWinningGoals: skater.gameWinningGoals,
+        shots: skater.shots,
+        shootingPctg: skater.shootingPctg,
+        avgTimeOnIce: skater.avgTimeOnIcePerGame,
+        faceoffWinPctg: skater.faceoffWinPctg,
         updatedAt: new Date(),
       }));
 
-      await this.databaseService.db
-        .insert(skaterSeasonStats)
-        .values(skaterRows)
-        .onConflictDoUpdate({
-          target: [skaterSeasonStats.playerId, skaterSeasonStats.season],
-          set: {
-            gamesPlayed: sql`excluded.games_played`,
-            goals: sql`excluded.goals`,
-            assists: sql`excluded.assists`,
-            points: sql`excluded.points`,
-            plusMinus: sql`excluded.plus_minus`,
-            penaltyMinutes: sql`excluded.penalty_minutes`,
-            powerPlayGoals: sql`excluded.power_play_goals`,
-            shorthandedGoals: sql`excluded.shorthanded_goals`,
-            gameWinningGoals: sql`excluded.game_winning_goals`,
-            shots: sql`excluded.shots`,
-            shootingPctg: sql`excluded.shooting_pctg`,
-            avgTimeOnIce: sql`excluded.avg_time_on_ice`,
-            faceoffWinPctg: sql`excluded.faceoff_win_pctg`,
-            updatedAt: sql`excluded.updated_at`,
-          },
-        });
-    }
+    if (rows.length === 0) return;
 
-    if (data.goalies.length > 0) {
-      const goalieRows = data.goalies
-        .filter((goalie) => rosterPlayerIds.has(goalie.playerId))
-        .map((g) => ({
-        playerId: g.playerId,
+    await this.databaseService.db
+      .insert(skaterSeasonStats)
+      .values(rows)
+      .onConflictDoUpdate({
+        target: [skaterSeasonStats.playerId, skaterSeasonStats.season],
+        set: {
+          gamesPlayed: sql`excluded.games_played`,
+          goals: sql`excluded.goals`,
+          assists: sql`excluded.assists`,
+          points: sql`excluded.points`,
+          plusMinus: sql`excluded.plus_minus`,
+          penaltyMinutes: sql`excluded.penalty_minutes`,
+          powerPlayGoals: sql`excluded.power_play_goals`,
+          shorthandedGoals: sql`excluded.shorthanded_goals`,
+          gameWinningGoals: sql`excluded.game_winning_goals`,
+          shots: sql`excluded.shots`,
+          shootingPctg: sql`excluded.shooting_pctg`,
+          avgTimeOnIce: sql`excluded.avg_time_on_ice`,
+          faceoffWinPctg: sql`excluded.faceoff_win_pctg`,
+          updatedAt: sql`excluded.updated_at`,
+        },
+      });
+  }
+
+  private async upsertGoalieStats(
+    clubStats: NhlClubStatsResponse,
+    season: string,
+    rosterPlayerIds: Set<number>,
+  ): Promise<void> {
+    const rows = clubStats.goalies
+      .filter((goalie) => rosterPlayerIds.has(goalie.playerId))
+      .map((goalie) => ({
+        playerId: goalie.playerId,
         season,
-        gamesPlayed: g.gamesPlayed,
-        gamesStarted: g.gamesStarted,
-        wins: g.wins,
-        losses: g.losses,
-        otLosses: g.overtimeLosses,
-        goalsAgainstAvg: g.goalsAgainstAverage,
-        savePctg: g.savePercentage,
-        shutouts: g.shutouts,
-        shotsAgainst: g.shotsAgainst,
-        saves: g.saves,
-        goalsAgainst: g.goalsAgainst,
+        gamesPlayed: goalie.gamesPlayed,
+        gamesStarted: goalie.gamesStarted,
+        wins: goalie.wins,
+        losses: goalie.losses,
+        otLosses: goalie.overtimeLosses,
+        goalsAgainstAvg: goalie.goalsAgainstAverage,
+        savePctg: goalie.savePercentage,
+        shutouts: goalie.shutouts,
+        shotsAgainst: goalie.shotsAgainst,
+        saves: goalie.saves,
+        goalsAgainst: goalie.goalsAgainst,
         updatedAt: new Date(),
       }));
 
-      await this.databaseService.db
-        .insert(goalieSeasonStats)
-        .values(goalieRows)
-        .onConflictDoUpdate({
-          target: [goalieSeasonStats.playerId, goalieSeasonStats.season],
-          set: {
-            gamesPlayed: sql`excluded.games_played`,
-            gamesStarted: sql`excluded.games_started`,
-            wins: sql`excluded.wins`,
-            losses: sql`excluded.losses`,
-            otLosses: sql`excluded.ot_losses`,
-            goalsAgainstAvg: sql`excluded.goals_against_avg`,
-            savePctg: sql`excluded.save_pctg`,
-            shutouts: sql`excluded.shutouts`,
-            shotsAgainst: sql`excluded.shots_against`,
-            saves: sql`excluded.saves`,
-            goalsAgainst: sql`excluded.goals_against`,
-            updatedAt: sql`excluded.updated_at`,
-          },
-        });
-    }
+    if (rows.length === 0) return;
+
+    await this.databaseService.db
+      .insert(goalieSeasonStats)
+      .values(rows)
+      .onConflictDoUpdate({
+        target: [goalieSeasonStats.playerId, goalieSeasonStats.season],
+        set: {
+          gamesPlayed: sql`excluded.games_played`,
+          gamesStarted: sql`excluded.games_started`,
+          wins: sql`excluded.wins`,
+          losses: sql`excluded.losses`,
+          otLosses: sql`excluded.ot_losses`,
+          goalsAgainstAvg: sql`excluded.goals_against_avg`,
+          savePctg: sql`excluded.save_pctg`,
+          shutouts: sql`excluded.shutouts`,
+          shotsAgainst: sql`excluded.shots_against`,
+          saves: sql`excluded.saves`,
+          goalsAgainst: sql`excluded.goals_against`,
+          updatedAt: sql`excluded.updated_at`,
+        },
+      });
   }
 }

@@ -1,8 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { desc, eq } from 'drizzle-orm';
+import { and, desc, eq } from 'drizzle-orm';
 import { CACHE_TTL } from '../common';
 import { CacheService } from '../cache';
-import { DatabaseService, players, skaterSeasonStats, goalieSeasonStats, teams } from '../database';
+import {
+  DatabaseService,
+  players,
+  rosters,
+  skaterSeasonStats,
+  goalieSeasonStats,
+  teams,
+} from '../database';
+import { SeasonsService } from '../seasons/seasons.service';
 import {
   SkaterLeaderEntry,
   GoalieLeaderEntry,
@@ -39,6 +47,7 @@ export class LeadersService {
   constructor(
     private readonly databaseService: DatabaseService,
     private readonly cacheService: CacheService,
+    private readonly seasonsService: SeasonsService,
   ) {}
 
   async skaterLeaders(limit: number = DEFAULT_LIMIT): Promise<SkaterLeaders> {
@@ -58,26 +67,38 @@ export class LeadersService {
   }
 
   private async fetchSkaterLeaders(limit: number): Promise<SkaterLeaders> {
+    const currentSeason = (await this.seasonsService.getCurrentSeasonId()) ?? '';
+    const currentTeam = and(
+      eq(rosters.playerId, players.id),
+      eq(rosters.season, currentSeason),
+    );
+
     const [goalsRows, assistsRows, pointsRows] = await Promise.all([
       this.databaseService.db
         .select({ ...skaterBase, value: skaterSeasonStats.goals })
         .from(skaterSeasonStats)
         .innerJoin(players, eq(skaterSeasonStats.playerId, players.id))
-        .innerJoin(teams, eq(players.teamId, teams.id))
+        .innerJoin(rosters, currentTeam)
+        .innerJoin(teams, eq(rosters.teamId, teams.id))
+        .where(eq(skaterSeasonStats.season, currentSeason))
         .orderBy(desc(skaterSeasonStats.goals))
         .limit(limit),
       this.databaseService.db
         .select({ ...skaterBase, value: skaterSeasonStats.assists })
         .from(skaterSeasonStats)
         .innerJoin(players, eq(skaterSeasonStats.playerId, players.id))
-        .innerJoin(teams, eq(players.teamId, teams.id))
+        .innerJoin(rosters, currentTeam)
+        .innerJoin(teams, eq(rosters.teamId, teams.id))
+        .where(eq(skaterSeasonStats.season, currentSeason))
         .orderBy(desc(skaterSeasonStats.assists))
         .limit(limit),
       this.databaseService.db
         .select({ ...skaterBase, value: skaterSeasonStats.points })
         .from(skaterSeasonStats)
         .innerJoin(players, eq(skaterSeasonStats.playerId, players.id))
-        .innerJoin(teams, eq(players.teamId, teams.id))
+        .innerJoin(rosters, currentTeam)
+        .innerJoin(teams, eq(rosters.teamId, teams.id))
+        .where(eq(skaterSeasonStats.season, currentSeason))
         .orderBy(desc(skaterSeasonStats.points))
         .limit(limit),
     ]);
@@ -90,26 +111,38 @@ export class LeadersService {
   }
 
   private async fetchGoalieLeaders(limit: number): Promise<GoalieLeaders> {
+    const currentSeason = (await this.seasonsService.getCurrentSeasonId()) ?? '';
+    const currentTeam = and(
+      eq(rosters.playerId, players.id),
+      eq(rosters.season, currentSeason),
+    );
+
     const [winsRows, savePctgRows, shutoutsRows] = await Promise.all([
       this.databaseService.db
         .select({ ...goalieBase, value: goalieSeasonStats.wins })
         .from(goalieSeasonStats)
         .innerJoin(players, eq(goalieSeasonStats.playerId, players.id))
-        .innerJoin(teams, eq(players.teamId, teams.id))
+        .innerJoin(rosters, currentTeam)
+        .innerJoin(teams, eq(rosters.teamId, teams.id))
+        .where(eq(goalieSeasonStats.season, currentSeason))
         .orderBy(desc(goalieSeasonStats.wins))
         .limit(limit),
       this.databaseService.db
         .select({ ...goalieBase, value: goalieSeasonStats.savePctg })
         .from(goalieSeasonStats)
         .innerJoin(players, eq(goalieSeasonStats.playerId, players.id))
-        .innerJoin(teams, eq(players.teamId, teams.id))
+        .innerJoin(rosters, currentTeam)
+        .innerJoin(teams, eq(rosters.teamId, teams.id))
+        .where(eq(goalieSeasonStats.season, currentSeason))
         .orderBy(desc(goalieSeasonStats.savePctg))
         .limit(limit),
       this.databaseService.db
         .select({ ...goalieBase, value: goalieSeasonStats.shutouts })
         .from(goalieSeasonStats)
         .innerJoin(players, eq(goalieSeasonStats.playerId, players.id))
-        .innerJoin(teams, eq(players.teamId, teams.id))
+        .innerJoin(rosters, currentTeam)
+        .innerJoin(teams, eq(rosters.teamId, teams.id))
+        .where(eq(goalieSeasonStats.season, currentSeason))
         .orderBy(desc(goalieSeasonStats.shutouts))
         .limit(limit),
     ]);

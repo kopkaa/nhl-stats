@@ -57,6 +57,13 @@
       "when": 1781075319728,
       "tag": "0007_overjoyed_pride",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1781261521125,
+      "tag": "0008_lazy_omega_sentinel",
+      "breakpoints": true
     }
   ]
 }

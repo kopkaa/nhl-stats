@@ -120,7 +120,7 @@ export type Player = {
   positionCode: PositionCode;
   shootsCatches?: Maybe<Scalars['String']['output']>;
   sweaterNumber?: Maybe<Scalars['Int']['output']>;
-  teamId: Scalars['Int']['output'];
+  teamId?: Maybe<Scalars['Int']['output']>;
   teamLogo?: Maybe<Scalars['String']['output']>;
   teamName?: Maybe<Scalars['String']['output']>;
   weightKg?: Maybe<Scalars['Int']['output']>;
@@ -362,7 +362,7 @@ export type GetPlayerQueryVariables = Exact<{
 }>;
 
 
-export type GetPlayerQuery = { __typename?: 'Query', player?: { __typename?: 'Player', id: number, teamId: number, teamName?: string | null, teamLogo?: string | null, firstName: string, lastName: string, positionCode: PositionCode, sweaterNumber?: number | null, headshot?: string | null, shootsCatches?: string | null, heightCm?: number | null, weightKg?: number | null, birthDate?: string | null, birthCountry?: string | null } | null };
+export type GetPlayerQuery = { __typename?: 'Query', player?: { __typename?: 'Player', id: number, teamId?: number | null, teamName?: string | null, teamLogo?: string | null, firstName: string, lastName: string, positionCode: PositionCode, sweaterNumber?: number | null, headshot?: string | null, shootsCatches?: string | null, heightCm?: number | null, weightKg?: number | null, birthDate?: string | null, birthCountry?: string | null } | null };
 
 export type GetPlayerSkaterStatsQueryVariables = Exact<{
   playerId: Scalars['Int']['input'];

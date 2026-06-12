@@ -72,11 +72,9 @@ export const standings = pgTable(
 
 export const players = pgTable('players', {
   id: integer('id').primaryKey(),
-  teamId: integer('team_id').references(() => teams.id).notNull(),
   firstName: varchar('first_name', { length: 100 }).notNull(),
   lastName: varchar('last_name', { length: 100 }).notNull(),
   positionCode: positionCodeEnum('position_code').notNull(),
-  sweaterNumber: integer('sweater_number'),
   headshot: varchar('headshot', { length: 512 }),
   shootsCatches: varchar('shoots_catches', { length: 2 }),
   heightCm: integer('height_cm'),
@@ -85,6 +83,20 @@ export const players = pgTable('players', {
   birthCountry: varchar('birth_country', { length: 5 }),
   updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
 });
+
+export const rosters = pgTable(
+  'rosters',
+  {
+    playerId: integer('player_id').references(() => players.id).notNull(),
+    teamId: integer('team_id').references(() => teams.id).notNull(),
+    season: varchar('season', { length: 7 }).references(() => seasons.id).notNull(),
+    sweaterNumber: integer('sweater_number'),
+    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  },
+  (table) => ({
+    pk: primaryKey({ columns: [table.playerId, table.teamId, table.season] }),
+  }),
+);
 
 export const skaterSeasonStats = pgTable(
   'skater_season_stats',

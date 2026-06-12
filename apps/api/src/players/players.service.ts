@@ -1,8 +1,16 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { CACHE_TTL, NhlApiClient } from '../common';
 import { CacheService } from '../cache';
-import { DatabaseService, players, skaterSeasonStats, goalieSeasonStats, teams } from '../database';
+import {
+  DatabaseService,
+  players,
+  rosters,
+  skaterSeasonStats,
+  goalieSeasonStats,
+  teams,
+} from '../database';
+import { SeasonsService } from '../seasons/seasons.service';
 import { Player, SkaterSeasonStats, GoalieSeasonStats, PlayerGameLogEntry } from './player.model';
 import { PositionCode } from '@nhl-app/shared';
 import { NhlGameLogResponse } from './players.types';
@@ -15,6 +23,7 @@ export class PlayersService {
     private readonly databaseService: DatabaseService,
     private readonly cacheService: CacheService,
     private readonly nhlApi: NhlApiClient,
+    private readonly seasonsService: SeasonsService,
   ) {}
 
   async teamRoster(teamId: number): Promise<Player[]> {
@@ -93,45 +102,50 @@ export class PlayersService {
   }
 
   private async fetchPlayer(id: number): Promise<Player | null> {
-    const rows = await this.databaseService.db
+    const currentSeason = (await this.seasonsService.getCurrentSeasonId()) ?? '';
+
+    const [row] = await this.databaseService.db
       .select({
         id: players.id,
-        teamId: players.teamId,
-        teamName: teams.fullName,
-        teamLogo: teams.logo,
         firstName: players.firstName,
         lastName: players.lastName,
         positionCode: players.positionCode,
-        sweaterNumber: players.sweaterNumber,
         headshot: players.headshot,
         shootsCatches: players.shootsCatches,
         heightCm: players.heightCm,
         weightKg: players.weightKg,
         birthDate: players.birthDate,
         birthCountry: players.birthCountry,
+        teamId: rosters.teamId,
+        sweaterNumber: rosters.sweaterNumber,
+        teamName: teams.fullName,
+        teamLogo: teams.logo,
       })
       .from(players)
-      .innerJoin(teams, eq(players.teamId, teams.id))
+      .leftJoin(
+        rosters,
+        and(eq(rosters.playerId, players.id), eq(rosters.season, currentSeason)),
+      )
+      .leftJoin(teams, eq(rosters.teamId, teams.id))
       .where(eq(players.id, id))
       .limit(1);
 
-    if (!rows[0]) return null;
-    const r = rows[0];
+    if (!row) return null;
     return {
-      id: r.id,
-      teamId: r.teamId,
-      teamName: r.teamName ?? undefined,
-      teamLogo: r.teamLogo ?? undefined,
-      firstName: r.firstName,
-      lastName: r.lastName,
-      positionCode: r.positionCode as PositionCode,
-      sweaterNumber: r.sweaterNumber ?? undefined,
-      headshot: r.headshot ?? undefined,
-      shootsCatches: r.shootsCatches ?? undefined,
-      heightCm: r.heightCm ?? undefined,
-      weightKg: r.weightKg ?? undefined,
-      birthDate: r.birthDate ?? undefined,
-      birthCountry: r.birthCountry ?? undefined,
+      id: row.id,
+      teamId: row.teamId ?? undefined,
+      teamName: row.teamName ?? undefined,
+      teamLogo: row.teamLogo ?? undefined,
+      firstName: row.firstName,
+      lastName: row.lastName,
+      positionCode: row.positionCode as PositionCode,
+      sweaterNumber: row.sweaterNumber ?? undefined,
+      headshot: row.headshot ?? undefined,
+      shootsCatches: row.shootsCatches ?? undefined,
+      heightCm: row.heightCm ?? undefined,
+      weightKg: row.weightKg ?? undefined,
+      birthDate: row.birthDate ?? undefined,
+      birthCountry: row.birthCountry ?? undefined,
     };
   }
 
@@ -163,13 +177,13 @@ export class PlayersService {
       .where(eq(skaterSeasonStats.playerId, playerId))
       .orderBy(skaterSeasonStats.season);
 
-    return rows.map((r) => ({
-      ...r,
-      headshot: r.headshot ?? undefined,
-      positionCode: r.positionCode as PositionCode,
-      shootingPctg: r.shootingPctg ?? undefined,
-      avgTimeOnIce: r.avgTimeOnIce ?? undefined,
-      faceoffWinPctg: r.faceoffWinPctg ?? undefined,
+    return rows.map((row) => ({
+      ...row,
+      headshot: row.headshot ?? undefined,
+      positionCode: row.positionCode as PositionCode,
+      shootingPctg: row.shootingPctg ?? undefined,
+      avgTimeOnIce: row.avgTimeOnIce ?? undefined,
+      faceoffWinPctg: row.faceoffWinPctg ?? undefined,
     }));
   }
 
@@ -198,38 +212,55 @@ export class PlayersService {
       .where(eq(goalieSeasonStats.playerId, playerId))
       .orderBy(goalieSeasonStats.season);
 
-    return rows.map((r) => ({
-      ...r,
-      headshot: r.headshot ?? undefined,
-      goalsAgainstAvg: r.goalsAgainstAvg ?? undefined,
-      savePctg: r.savePctg ?? undefined,
+    return rows.map((row) => ({
+      ...row,
+      headshot: row.headshot ?? undefined,
+      goalsAgainstAvg: row.goalsAgainstAvg ?? undefined,
+      savePctg: row.savePctg ?? undefined,
     }));
   }
 
   private async fetchRoster(teamId: number): Promise<Player[]> {
+    const currentSeason = (await this.seasonsService.getCurrentSeasonId()) ?? '';
+
     const rows = await this.databaseService.db
-      .select()
-      .from(players)
-      .where(eq(players.teamId, teamId))
+      .select({
+        id: players.id,
+        firstName: players.firstName,
+        lastName: players.lastName,
+        positionCode: players.positionCode,
+        sweaterNumber: rosters.sweaterNumber,
+        headshot: players.headshot,
+        shootsCatches: players.shootsCatches,
+        heightCm: players.heightCm,
+        weightKg: players.weightKg,
+        birthDate: players.birthDate,
+        birthCountry: players.birthCountry,
+      })
+      .from(rosters)
+      .innerJoin(players, eq(rosters.playerId, players.id))
+      .where(and(eq(rosters.teamId, teamId), eq(rosters.season, currentSeason)))
       .orderBy(players.lastName);
 
-    return rows.map((r) => ({
-      id: r.id,
-      teamId: r.teamId,
-      firstName: r.firstName,
-      lastName: r.lastName,
-      positionCode: r.positionCode as PositionCode,
-      sweaterNumber: r.sweaterNumber ?? undefined,
-      headshot: r.headshot ?? undefined,
-      shootsCatches: r.shootsCatches ?? undefined,
-      heightCm: r.heightCm ?? undefined,
-      weightKg: r.weightKg ?? undefined,
-      birthDate: r.birthDate ?? undefined,
-      birthCountry: r.birthCountry ?? undefined,
+    return rows.map((row) => ({
+      id: row.id,
+      teamId,
+      firstName: row.firstName,
+      lastName: row.lastName,
+      positionCode: row.positionCode as PositionCode,
+      sweaterNumber: row.sweaterNumber ?? undefined,
+      headshot: row.headshot ?? undefined,
+      shootsCatches: row.shootsCatches ?? undefined,
+      heightCm: row.heightCm ?? undefined,
+      weightKg: row.weightKg ?? undefined,
+      birthDate: row.birthDate ?? undefined,
+      birthCountry: row.birthCountry ?? undefined,
     }));
   }
 
   private async fetchSkaterStats(teamId: number): Promise<SkaterSeasonStats[]> {
+    const currentSeason = (await this.seasonsService.getCurrentSeasonId()) ?? '';
+
     const rows = await this.databaseService.db
       .select({
         playerId: skaterSeasonStats.playerId,
@@ -254,20 +285,28 @@ export class PlayersService {
       })
       .from(skaterSeasonStats)
       .innerJoin(players, eq(skaterSeasonStats.playerId, players.id))
-      .where(eq(players.teamId, teamId))
+      .innerJoin(
+        rosters,
+        and(eq(rosters.playerId, players.id), eq(rosters.season, currentSeason)),
+      )
+      .where(
+        and(eq(rosters.teamId, teamId), eq(skaterSeasonStats.season, currentSeason)),
+      )
       .orderBy(skaterSeasonStats.points);
 
-    return rows.map((r) => ({
-      ...r,
-      headshot: r.headshot ?? undefined,
-      positionCode: r.positionCode as PositionCode,
-      shootingPctg: r.shootingPctg ?? undefined,
-      avgTimeOnIce: r.avgTimeOnIce ?? undefined,
-      faceoffWinPctg: r.faceoffWinPctg ?? undefined,
+    return rows.map((row) => ({
+      ...row,
+      headshot: row.headshot ?? undefined,
+      positionCode: row.positionCode as PositionCode,
+      shootingPctg: row.shootingPctg ?? undefined,
+      avgTimeOnIce: row.avgTimeOnIce ?? undefined,
+      faceoffWinPctg: row.faceoffWinPctg ?? undefined,
     }));
   }
 
   private async fetchGoalieStats(teamId: number): Promise<GoalieSeasonStats[]> {
+    const currentSeason = (await this.seasonsService.getCurrentSeasonId()) ?? '';
+
     const rows = await this.databaseService.db
       .select({
         playerId: goalieSeasonStats.playerId,
@@ -289,14 +328,20 @@ export class PlayersService {
       })
       .from(goalieSeasonStats)
       .innerJoin(players, eq(goalieSeasonStats.playerId, players.id))
-      .where(eq(players.teamId, teamId))
+      .innerJoin(
+        rosters,
+        and(eq(rosters.playerId, players.id), eq(rosters.season, currentSeason)),
+      )
+      .where(
+        and(eq(rosters.teamId, teamId), eq(goalieSeasonStats.season, currentSeason)),
+      )
       .orderBy(goalieSeasonStats.wins);
 
-    return rows.map((r) => ({
-      ...r,
-      headshot: r.headshot ?? undefined,
-      goalsAgainstAvg: r.goalsAgainstAvg ?? undefined,
-      savePctg: r.savePctg ?? undefined,
+    return rows.map((row) => ({
+      ...row,
+      headshot: row.headshot ?? undefined,
+      goalsAgainstAvg: row.goalsAgainstAvg ?? undefined,
+      savePctg: row.savePctg ?? undefined,
     }));
   }
 }

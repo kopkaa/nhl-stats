@@ -5,5 +5,6 @@ import { SeasonsSyncService } from './seasons-sync.service';
 
 @Module({
   providers: [SeasonsResolver, SeasonsService, SeasonsSyncService],
+  exports: [SeasonsService],
 })
 export class SeasonsModule {}

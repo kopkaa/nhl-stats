@@ -1,0 +1,12 @@
+**/node_modules
+**/dist
+**/.nuxt
+**/.output
+**/coverage
+**/.git
+backups
+*.log
+**/.env
+**/.env.local
+.idea
+.vscode

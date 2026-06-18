@@ -20,7 +20,9 @@ import { SeasonsModule } from './seasons/seasons.module';
     ScheduleModule.forRoot(),
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: 'schema.gql',
+      // Dev writes the SDL to disk for codegen; production keeps it in memory
+      // (the committed schema.gql is the codegen source, the server needn't write it).
+      autoSchemaFile: process.env.NODE_ENV === 'production' ? true : 'schema.gql',
     }),
     CommonModule,
     DatabaseModule,

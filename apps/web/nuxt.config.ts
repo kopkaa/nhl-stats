@@ -6,6 +6,7 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   devServer: { port: 3001 },
   modules: ['@primevue/nuxt-module', '@nuxtjs/tailwindcss'],
+  components: [{ path: '~/components', pathPrefix: false }],
   primevue: {
     options: {
       theme: {

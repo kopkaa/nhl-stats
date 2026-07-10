@@ -11,6 +11,13 @@ export function formatToi(minutes: number | null | undefined): string {
   return `${min}:${sec.toString().padStart(2, '0')}`;
 }
 
+export function parseToiMinutes(toi: string | null | undefined): number | null {
+  if (!toi) return null;
+  const [minutes, seconds] = toi.split(':').map(Number);
+  if (Number.isNaN(minutes) || Number.isNaN(seconds)) return null;
+  return minutes + seconds / 60;
+}
+
 export function formatPctg(pctg: number | null | undefined): string {
   if (pctg == null) return '—';
   return (pctg * 100).toFixed(1);

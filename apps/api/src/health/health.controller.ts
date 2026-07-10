@@ -2,12 +2,14 @@ import { Controller, Get } from '@nestjs/common';
 import { DatabaseService } from '../database';
 import { CacheService } from '../cache';
 
+type ServiceStatus = 'up' | 'down';
+
 interface HealthStatus {
   status: 'ok' | 'error';
   uptime: number;
   services: {
-    postgres: 'up' | 'down';
-    redis: 'up' | 'down';
+    postgres: ServiceStatus;
+    redis: ServiceStatus;
   };
 }
 

@@ -9,8 +9,21 @@ import {
 } from 'drizzle-orm/pg-core';
 
 export const streakCodeEnum = pgEnum('streak_code', ['W', 'L', 'OT']);
-export const positionCodeEnum = pgEnum('position_code', ['C', 'L', 'R', 'D', 'G']);
-export const gameStateEnum = pgEnum('game_state', ['FUT', 'PRE', 'LIVE', 'FINAL', 'OFF', 'CRIT']);
+export const positionCodeEnum = pgEnum('position_code', [
+  'C',
+  'L',
+  'R',
+  'D',
+  'G',
+]);
+export const gameStateEnum = pgEnum('game_state', [
+  'FUT', // Future
+  'PRE', // Pre-game
+  'LIVE', // In progress
+  'CRIT', // Critical (Overtime or Shootout)
+  'FINAL', // Final
+  'OFF', // Official
+]);
 
 export const teams = pgTable('teams', {
   id: integer('id').primaryKey(),
@@ -47,7 +60,9 @@ export const standings = pgTable(
     teamId: integer('team_id')
       .references(() => teams.id)
       .notNull(),
-    season: varchar('season', { length: 7 }).references(() => seasons.id).notNull(),
+    season: varchar('season', { length: 7 })
+      .references(() => seasons.id)
+      .notNull(),
     gamesPlayed: integer('games_played').notNull().default(0),
     wins: integer('wins').notNull().default(0),
     losses: integer('losses').notNull().default(0),
@@ -81,17 +96,27 @@ export const players = pgTable('players', {
   weightKg: integer('weight_kg'),
   birthDate: varchar('birth_date', { length: 10 }),
   birthCountry: varchar('birth_country', { length: 5 }),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });
 
 export const rosters = pgTable(
   'rosters',
   {
-    playerId: integer('player_id').references(() => players.id).notNull(),
-    teamId: integer('team_id').references(() => teams.id).notNull(),
-    season: varchar('season', { length: 7 }).references(() => seasons.id).notNull(),
+    playerId: integer('player_id')
+      .references(() => players.id)
+      .notNull(),
+    teamId: integer('team_id')
+      .references(() => teams.id)
+      .notNull(),
+    season: varchar('season', { length: 7 })
+      .references(() => seasons.id)
+      .notNull(),
     sweaterNumber: integer('sweater_number'),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.playerId, table.teamId, table.season] }),
@@ -101,8 +126,12 @@ export const rosters = pgTable(
 export const skaterSeasonStats = pgTable(
   'skater_season_stats',
   {
-    playerId: integer('player_id').references(() => players.id).notNull(),
-    season: varchar('season', { length: 7 }).references(() => seasons.id).notNull(),
+    playerId: integer('player_id')
+      .references(() => players.id)
+      .notNull(),
+    season: varchar('season', { length: 7 })
+      .references(() => seasons.id)
+      .notNull(),
     gamesPlayed: integer('games_played').notNull().default(0),
     goals: integer('goals').notNull().default(0),
     assists: integer('assists').notNull().default(0),
@@ -116,7 +145,9 @@ export const skaterSeasonStats = pgTable(
     shootingPctg: real('shooting_pctg').default(0),
     avgTimeOnIce: real('avg_time_on_ice').default(0),
     faceoffWinPctg: real('faceoff_win_pctg').default(0),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.playerId, table.season] }),
@@ -126,8 +157,12 @@ export const skaterSeasonStats = pgTable(
 export const goalieSeasonStats = pgTable(
   'goalie_season_stats',
   {
-    playerId: integer('player_id').references(() => players.id).notNull(),
-    season: varchar('season', { length: 7 }).references(() => seasons.id).notNull(),
+    playerId: integer('player_id')
+      .references(() => players.id)
+      .notNull(),
+    season: varchar('season', { length: 7 })
+      .references(() => seasons.id)
+      .notNull(),
     gamesPlayed: integer('games_played').notNull().default(0),
     gamesStarted: integer('games_started').notNull().default(0),
     wins: integer('wins').notNull().default(0),
@@ -139,7 +174,9 @@ export const goalieSeasonStats = pgTable(
     shotsAgainst: integer('shots_against').notNull().default(0),
     saves: integer('saves').notNull().default(0),
     goalsAgainst: integer('goals_against').notNull().default(0),
-    updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+    updatedAt: timestamp('updated_at', { withTimezone: true })
+      .defaultNow()
+      .notNull(),
   },
   (table) => ({
     pk: primaryKey({ columns: [table.playerId, table.season] }),
@@ -148,15 +185,23 @@ export const goalieSeasonStats = pgTable(
 
 export const games = pgTable('games', {
   id: integer('id').primaryKey(),
-  season: varchar('season', { length: 7 }).references(() => seasons.id).notNull(),
+  season: varchar('season', { length: 7 })
+    .references(() => seasons.id)
+    .notNull(),
   gameType: integer('game_type').notNull(),
   gameDate: varchar('game_date', { length: 10 }).notNull(),
   startTimeUTC: varchar('start_time_utc', { length: 30 }),
   gameState: gameStateEnum('game_state').notNull(),
   venue: varchar('venue', { length: 255 }),
-  homeTeamId: integer('home_team_id').references(() => teams.id).notNull(),
-  awayTeamId: integer('away_team_id').references(() => teams.id).notNull(),
+  homeTeamId: integer('home_team_id')
+    .references(() => teams.id)
+    .notNull(),
+  awayTeamId: integer('away_team_id')
+    .references(() => teams.id)
+    .notNull(),
   homeScore: integer('home_score'),
   awayScore: integer('away_score'),
-  updatedAt: timestamp('updated_at', { withTimezone: true }).defaultNow().notNull(),
+  updatedAt: timestamp('updated_at', { withTimezone: true })
+    .defaultNow()
+    .notNull(),
 });

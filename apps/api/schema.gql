@@ -184,6 +184,90 @@ enum GameState {
   CRIT
 }
 
+type GameTeamSide {
+  id: Int!
+  name: String!
+  abbrev: String!
+  logo: String
+  score: Int
+  sog: Int
+}
+
+type PeriodScore {
+  periodNumber: Int!
+
+  """REG | OT | SO"""
+  periodType: String!
+  homeGoals: Int!
+  awayGoals: Int!
+  homeShots: Int
+  awayShots: Int
+}
+
+type GoalAssist {
+  playerId: Int!
+  name: String!
+  assistsToDate: Int
+}
+
+type ScoringPlay {
+  periodNumber: Int!
+  timeInPeriod: String!
+  playerId: Int!
+  scorerName: String!
+  headshot: String
+  teamAbbrev: String!
+  isHome: Boolean!
+
+  """ev | pp | sh"""
+  strength: String
+  shotType: String
+  assists: [GoalAssist!]!
+  homeScore: Int!
+  awayScore: Int!
+}
+
+type PenaltyCall {
+  periodNumber: Int!
+  timeInPeriod: String!
+
+  """MIN | MAJ | MISC | BEN"""
+  type: String!
+  duration: Int
+
+  """tripping, hooking, ..."""
+  descKey: String!
+  teamAbbrev: String!
+  committedBy: String
+  drawnBy: String
+}
+
+type TeamGameStat {
+  """sog, faceoffWinningPctg, powerPlay, hits, ..."""
+  category: String!
+  homeValue: String!
+  awayValue: String!
+}
+
+type GameDetail {
+  id: Int!
+  season: String!
+  gameType: Int!
+  gameDate: String!
+  startTimeUTC: String
+  gameState: GameState!
+  venue: String
+  currentPeriod: Int
+  clockTimeRemaining: String
+  inIntermission: Boolean
+  homeTeam: GameTeamSide!
+  awayTeam: GameTeamSide!
+  periods: [PeriodScore!]!
+  scoring: [ScoringPlay!]!
+  penalties: [PenaltyCall!]!
+  teamStats: [TeamGameStat!]!
+}
+
 type SkaterLeaderEntry {
   playerId: Int!
   firstName: String!
@@ -271,6 +355,12 @@ type Query {
     """YYYY-MM-DD"""
     date: String!
   ): [Game!]!
+
+  """Today's games with live scores, straight from NHL API"""
+  gamesToday: [Game!]!
+
+  """Live game detail — linescore, goals, penalties, team stats"""
+  gameDetail(id: Int!): GameDetail!
 
   """Top skaters by goals, assists, and points"""
   skaterLeaders(limit: Int! = 10): SkaterLeaders!

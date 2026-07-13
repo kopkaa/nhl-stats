@@ -52,13 +52,15 @@ export class CacheService implements OnModuleDestroy {
   async getOrSet<T>(
     key: string,
     fetcher: () => Promise<T>,
-    ttlSeconds = DEFAULT_TTL,
+    ttlSeconds: number | ((value: T) => number) = DEFAULT_TTL,
   ): Promise<T> {
     const cached = await this.get<T>(key);
     if (cached !== null) return cached;
 
     const fresh = await fetcher();
-    await this.set(key, fresh, ttlSeconds);
+    const ttl =
+      typeof ttlSeconds === 'function' ? ttlSeconds(fresh) : ttlSeconds;
+    await this.set(key, fresh, ttl);
     return fresh;
   }
 

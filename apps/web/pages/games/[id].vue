@@ -6,11 +6,9 @@ const LIVE_POLL_MS = 20000;
 const route = useRoute();
 const gameId = computed(() => Number(route.params.id));
 
-const pollInterval = ref(0);
-
 const { result, loading, error } = useGetGameDetailQuery(
   () => ({ id: gameId.value }),
-  () => ({ pollInterval: pollInterval.value }),
+  () => ({ pollInterval: isLive.value ? LIVE_POLL_MS : 0 }),
 );
 
 const game = computed(() => result.value?.gameDetail);
@@ -18,10 +16,6 @@ const game = computed(() => result.value?.gameDetail);
 const isLive = computed(() =>
   game.value ? [GameState.Live, GameState.Crit].includes(game.value.gameState) : false,
 );
-
-watchEffect(() => {
-  pollInterval.value = isLive.value ? LIVE_POLL_MS : 0;
-});
 
 type Tab = 'summary' | 'stats';
 const activeTab = ref<Tab>('summary');

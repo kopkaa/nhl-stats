@@ -1,0 +1,70 @@
+query GetGameDetail($id: Int!) {
+  gameDetail(id: $id) {
+    id
+    season
+    gameType
+    gameDate
+    startTimeUTC
+    gameState
+    venue
+    currentPeriod
+    clockTimeRemaining
+    inIntermission
+    homeTeam {
+      id
+      name
+      abbrev
+      logo
+      score
+      sog
+    }
+    awayTeam {
+      id
+      name
+      abbrev
+      logo
+      score
+      sog
+    }
+    periods {
+      periodNumber
+      periodType
+      homeGoals
+      awayGoals
+      homeShots
+      awayShots
+    }
+    scoring {
+      periodNumber
+      timeInPeriod
+      playerId
+      scorerName
+      headshot
+      teamAbbrev
+      isHome
+      strength
+      shotType
+      homeScore
+      awayScore
+      assists {
+        playerId
+        name
+      }
+    }
+    penalties {
+      periodNumber
+      timeInPeriod
+      type
+      duration
+      descKey
+      teamAbbrev
+      committedBy
+      drawnBy
+    }
+    teamStats {
+      category
+      homeValue
+      awayValue
+    }
+  }
+}

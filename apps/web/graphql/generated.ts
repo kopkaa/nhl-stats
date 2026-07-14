@@ -49,6 +49,26 @@ export type Game = {
   venue?: Maybe<Scalars['String']['output']>;
 };
 
+export type GameDetail = {
+  __typename?: 'GameDetail';
+  awayTeam: GameTeamSide;
+  clockTimeRemaining?: Maybe<Scalars['String']['output']>;
+  currentPeriod?: Maybe<Scalars['Int']['output']>;
+  gameDate: Scalars['String']['output'];
+  gameState: GameState;
+  gameType: Scalars['Int']['output'];
+  homeTeam: GameTeamSide;
+  id: Scalars['Int']['output'];
+  inIntermission?: Maybe<Scalars['Boolean']['output']>;
+  penalties: Array<PenaltyCall>;
+  periods: Array<PeriodScore>;
+  scoring: Array<ScoringPlay>;
+  season: Scalars['String']['output'];
+  startTimeUTC?: Maybe<Scalars['String']['output']>;
+  teamStats: Array<TeamGameStat>;
+  venue?: Maybe<Scalars['String']['output']>;
+};
+
 export enum GameState {
   Crit = 'CRIT',
   Final = 'FINAL',
@@ -57,6 +77,23 @@ export enum GameState {
   Off = 'OFF',
   Pre = 'PRE'
 }
+
+export type GameTeamSide = {
+  __typename?: 'GameTeamSide';
+  abbrev: Scalars['String']['output'];
+  id: Scalars['Int']['output'];
+  logo?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  score?: Maybe<Scalars['Int']['output']>;
+  sog?: Maybe<Scalars['Int']['output']>;
+};
+
+export type GoalAssist = {
+  __typename?: 'GoalAssist';
+  assistsToDate?: Maybe<Scalars['Int']['output']>;
+  name: Scalars['String']['output'];
+  playerId: Scalars['Int']['output'];
+};
 
 export type GoalieLeaderEntry = {
   __typename?: 'GoalieLeaderEntry';
@@ -108,6 +145,31 @@ export type Mutation = {
   syncStandings: Scalars['Int']['output'];
   /** Sync teams from NHL API to database */
   syncTeams: Scalars['Int']['output'];
+};
+
+export type PenaltyCall = {
+  __typename?: 'PenaltyCall';
+  committedBy?: Maybe<Scalars['String']['output']>;
+  /** tripping, hooking, ... */
+  descKey: Scalars['String']['output'];
+  drawnBy?: Maybe<Scalars['String']['output']>;
+  duration?: Maybe<Scalars['Int']['output']>;
+  periodNumber: Scalars['Int']['output'];
+  teamAbbrev: Scalars['String']['output'];
+  timeInPeriod: Scalars['String']['output'];
+  /** MIN | MAJ | MISC | BEN */
+  type: Scalars['String']['output'];
+};
+
+export type PeriodScore = {
+  __typename?: 'PeriodScore';
+  awayGoals: Scalars['Int']['output'];
+  awayShots?: Maybe<Scalars['Int']['output']>;
+  homeGoals: Scalars['Int']['output'];
+  homeShots?: Maybe<Scalars['Int']['output']>;
+  periodNumber: Scalars['Int']['output'];
+  /** REG | OT | SO */
+  periodType: Scalars['String']['output'];
 };
 
 export type Player = {
@@ -163,8 +225,12 @@ export type Query = {
   __typename?: 'Query';
   /** The current season resolved from today's date */
   currentSeason?: Maybe<Season>;
+  /** Live game detail — linescore, goals, penalties, team stats */
+  gameDetail: GameDetail;
   /** All games on a given date */
   gamesByDate: Array<Game>;
+  /** Today's games with live scores, straight from NHL API */
+  gamesToday: Array<Game>;
   /** Top goalies by wins, save percentage, and shutouts */
   goalieLeaders: GoalieLeaders;
   /** Single player by id */
@@ -197,6 +263,11 @@ export type Query = {
   teamStanding?: Maybe<Standing>;
   /** All active NHL teams */
   teams: Array<Team>;
+};
+
+
+export type QueryGameDetailArgs = {
+  id: Scalars['Int']['input'];
 };
 
 
@@ -274,6 +345,23 @@ export type QueryTeamSkaterStatsArgs = {
 
 export type QueryTeamStandingArgs = {
   teamId: Scalars['Int']['input'];
+};
+
+export type ScoringPlay = {
+  __typename?: 'ScoringPlay';
+  assists: Array<GoalAssist>;
+  awayScore: Scalars['Int']['output'];
+  headshot?: Maybe<Scalars['String']['output']>;
+  homeScore: Scalars['Int']['output'];
+  isHome: Scalars['Boolean']['output'];
+  periodNumber: Scalars['Int']['output'];
+  playerId: Scalars['Int']['output'];
+  scorerName: Scalars['String']['output'];
+  shotType?: Maybe<Scalars['String']['output']>;
+  /** ev | pp | sh */
+  strength?: Maybe<Scalars['String']['output']>;
+  teamAbbrev: Scalars['String']['output'];
+  timeInPeriod: Scalars['String']['output'];
 };
 
 export type Season = {
@@ -376,12 +464,32 @@ export type Team = {
   triCode: Scalars['String']['output'];
 };
 
+export type TeamGameStat = {
+  __typename?: 'TeamGameStat';
+  awayValue: Scalars['String']['output'];
+  /** sog, faceoffWinningPctg, powerPlay, hits, ... */
+  category: Scalars['String']['output'];
+  homeValue: Scalars['String']['output'];
+};
+
+export type GetGameDetailQueryVariables = Exact<{
+  id: Scalars['Int']['input'];
+}>;
+
+
+export type GetGameDetailQuery = { __typename?: 'Query', gameDetail: { __typename?: 'GameDetail', id: number, season: string, gameType: number, gameDate: string, startTimeUTC?: string | null, gameState: GameState, venue?: string | null, currentPeriod?: number | null, clockTimeRemaining?: string | null, inIntermission?: boolean | null, homeTeam: { __typename?: 'GameTeamSide', id: number, name: string, abbrev: string, logo?: string | null, score?: number | null, sog?: number | null }, awayTeam: { __typename?: 'GameTeamSide', id: number, name: string, abbrev: string, logo?: string | null, score?: number | null, sog?: number | null }, periods: Array<{ __typename?: 'PeriodScore', periodNumber: number, periodType: string, homeGoals: number, awayGoals: number, homeShots?: number | null, awayShots?: number | null }>, scoring: Array<{ __typename?: 'ScoringPlay', periodNumber: number, timeInPeriod: string, playerId: number, scorerName: string, headshot?: string | null, teamAbbrev: string, isHome: boolean, strength?: string | null, shotType?: string | null, homeScore: number, awayScore: number, assists: Array<{ __typename?: 'GoalAssist', playerId: number, name: string }> }>, penalties: Array<{ __typename?: 'PenaltyCall', periodNumber: number, timeInPeriod: string, type: string, duration?: number | null, descKey: string, teamAbbrev: string, committedBy?: string | null, drawnBy?: string | null }>, teamStats: Array<{ __typename?: 'TeamGameStat', category: string, homeValue: string, awayValue: string }> } };
+
 export type GetGamesByDateQueryVariables = Exact<{
   date: Scalars['String']['input'];
 }>;
 
 
 export type GetGamesByDateQuery = { __typename?: 'Query', gamesByDate: Array<{ __typename?: 'Game', id: number, gameDate: string, startTimeUTC?: string | null, gameState: GameState, venue?: string | null, homeTeamId: number, homeTeamName?: string | null, homeTeamLogo?: string | null, homeScore?: number | null, awayTeamId: number, awayTeamName?: string | null, awayTeamLogo?: string | null, awayScore?: number | null }> };
+
+export type GetGamesTodayQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetGamesTodayQuery = { __typename?: 'Query', gamesToday: Array<{ __typename?: 'Game', id: number, gameDate: string, startTimeUTC?: string | null, gameState: GameState, venue?: string | null, homeTeamId: number, homeTeamName?: string | null, homeTeamLogo?: string | null, homeScore?: number | null, awayTeamId: number, awayTeamName?: string | null, awayTeamLogo?: string | null, awayScore?: number | null }> };
 
 export type GetGoalieLeadersQueryVariables = Exact<{
   limit?: InputMaybe<Scalars['Int']['input']>;
@@ -482,6 +590,101 @@ export type GetTeamsQueryVariables = Exact<{ [key: string]: never; }>;
 export type GetTeamsQuery = { __typename?: 'Query', teams: Array<{ __typename?: 'Team', id: number, fullName: string, triCode: string, logo?: string | null, conferenceName?: string | null, divisionName?: string | null }> };
 
 
+export const GetGameDetailDocument = gql`
+    query GetGameDetail($id: Int!) {
+  gameDetail(id: $id) {
+    id
+    season
+    gameType
+    gameDate
+    startTimeUTC
+    gameState
+    venue
+    currentPeriod
+    clockTimeRemaining
+    inIntermission
+    homeTeam {
+      id
+      name
+      abbrev
+      logo
+      score
+      sog
+    }
+    awayTeam {
+      id
+      name
+      abbrev
+      logo
+      score
+      sog
+    }
+    periods {
+      periodNumber
+      periodType
+      homeGoals
+      awayGoals
+      homeShots
+      awayShots
+    }
+    scoring {
+      periodNumber
+      timeInPeriod
+      playerId
+      scorerName
+      headshot
+      teamAbbrev
+      isHome
+      strength
+      shotType
+      homeScore
+      awayScore
+      assists {
+        playerId
+        name
+      }
+    }
+    penalties {
+      periodNumber
+      timeInPeriod
+      type
+      duration
+      descKey
+      teamAbbrev
+      committedBy
+      drawnBy
+    }
+    teamStats {
+      category
+      homeValue
+      awayValue
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetGameDetailQuery__
+ *
+ * To run a query within a Vue component, call `useGetGameDetailQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetGameDetailQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param variables that will be passed into the query
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useGetGameDetailQuery({
+ *   id: // value for 'id'
+ * });
+ */
+export function useGetGameDetailQuery(variables: GetGameDetailQueryVariables | VueCompositionApi.Ref<GetGameDetailQueryVariables> | ReactiveFunction<GetGameDetailQueryVariables>, options: VueApolloComposable.UseQueryOptions<GetGameDetailQuery, GetGameDetailQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetGameDetailQuery, GetGameDetailQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetGameDetailQuery, GetGameDetailQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<GetGameDetailQuery, GetGameDetailQueryVariables>(GetGameDetailDocument, variables, options);
+}
+export function useGetGameDetailLazyQuery(variables?: GetGameDetailQueryVariables | VueCompositionApi.Ref<GetGameDetailQueryVariables> | ReactiveFunction<GetGameDetailQueryVariables>, options: VueApolloComposable.UseQueryOptions<GetGameDetailQuery, GetGameDetailQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetGameDetailQuery, GetGameDetailQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetGameDetailQuery, GetGameDetailQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<GetGameDetailQuery, GetGameDetailQueryVariables>(GetGameDetailDocument, variables, options);
+}
+export type GetGameDetailQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetGameDetailQuery, GetGameDetailQueryVariables>;
 export const GetGamesByDateDocument = gql`
     query GetGamesByDate($date: String!) {
   gamesByDate(date: $date) {
@@ -524,6 +727,45 @@ export function useGetGamesByDateLazyQuery(variables?: GetGamesByDateQueryVariab
   return VueApolloComposable.useLazyQuery<GetGamesByDateQuery, GetGamesByDateQueryVariables>(GetGamesByDateDocument, variables, options);
 }
 export type GetGamesByDateQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetGamesByDateQuery, GetGamesByDateQueryVariables>;
+export const GetGamesTodayDocument = gql`
+    query GetGamesToday {
+  gamesToday {
+    id
+    gameDate
+    startTimeUTC
+    gameState
+    venue
+    homeTeamId
+    homeTeamName
+    homeTeamLogo
+    homeScore
+    awayTeamId
+    awayTeamName
+    awayTeamLogo
+    awayScore
+  }
+}
+    `;
+
+/**
+ * __useGetGamesTodayQuery__
+ *
+ * To run a query within a Vue component, call `useGetGamesTodayQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetGamesTodayQuery` returns an object from Apollo Client that contains result, loading and error properties
+ * you can use to render your UI.
+ *
+ * @param options that will be passed into the query, supported options are listed on: https://v4.apollo.vuejs.org/guide-composable/query.html#options;
+ *
+ * @example
+ * const { result, loading, error } = useGetGamesTodayQuery();
+ */
+export function useGetGamesTodayQuery(options: VueApolloComposable.UseQueryOptions<GetGamesTodayQuery, GetGamesTodayQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetGamesTodayQuery, GetGamesTodayQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetGamesTodayQuery, GetGamesTodayQueryVariables>> = {}) {
+  return VueApolloComposable.useQuery<GetGamesTodayQuery, GetGamesTodayQueryVariables>(GetGamesTodayDocument, {}, options);
+}
+export function useGetGamesTodayLazyQuery(options: VueApolloComposable.UseQueryOptions<GetGamesTodayQuery, GetGamesTodayQueryVariables> | VueCompositionApi.Ref<VueApolloComposable.UseQueryOptions<GetGamesTodayQuery, GetGamesTodayQueryVariables>> | ReactiveFunction<VueApolloComposable.UseQueryOptions<GetGamesTodayQuery, GetGamesTodayQueryVariables>> = {}) {
+  return VueApolloComposable.useLazyQuery<GetGamesTodayQuery, GetGamesTodayQueryVariables>(GetGamesTodayDocument, {}, options);
+}
+export type GetGamesTodayQueryCompositionFunctionResult = VueApolloComposable.UseQueryReturn<GetGamesTodayQuery, GetGamesTodayQueryVariables>;
 export const GetGoalieLeadersDocument = gql`
     query GetGoalieLeaders($limit: Int) {
   goalieLeaders(limit: $limit) {

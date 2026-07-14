@@ -1,0 +1,17 @@
+query GetGamesToday {
+  gamesToday {
+    id
+    gameDate
+    startTimeUTC
+    gameState
+    venue
+    homeTeamId
+    homeTeamName
+    homeTeamLogo
+    homeScore
+    awayTeamId
+    awayTeamName
+    awayTeamLogo
+    awayScore
+  }
+}

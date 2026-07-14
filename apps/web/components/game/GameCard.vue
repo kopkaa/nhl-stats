@@ -59,12 +59,11 @@ const sides = computed(() => {
       </span>
     </div>
 
-    <div class="flex flex-col">
-      <NuxtLink
+    <NuxtLink :to="`/games/${game.id}`" class="flex flex-col no-underline">
+      <div
         v-for="side in sides"
         :key="side.kind"
-        :to="`/teams/${side.teamId}`"
-        class="flex items-center gap-2.5 px-3 py-2 no-underline transition-colors hover:bg-white/[0.03]"
+        class="flex items-center gap-2.5 px-3 py-2 transition-colors hover:bg-white/[0.03]"
       >
         <img
           v-if="side.logo"
@@ -86,7 +85,7 @@ const sides = computed(() => {
         >
           {{ side.score }}
         </span>
-      </NuxtLink>
-    </div>
+      </div>
+    </NuxtLink>
   </div>
 </template>

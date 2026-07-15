@@ -1,14 +1,13 @@
 <script setup lang="ts">
 import type { GetGamesByDateQuery } from '~/graphql/generated';
-import { GameState } from '~/graphql/generated';
 
 type Game = GetGamesByDateQuery['gamesByDate'][number];
 
 const props = defineProps<{ game: Game }>();
 
-const isLive = computed(() => [GameState.Live, GameState.Crit].includes(props.game.gameState));
-const isFinal = computed(() => [GameState.Final, GameState.Off].includes(props.game.gameState));
-const isUpcoming = computed(() => !isLive.value && !isFinal.value);
+const isLive = computed(() => isLiveState(props.game.gameState));
+const isFinal = computed(() => isFinalState(props.game.gameState));
+const isUpcoming = computed(() => isUpcomingState(props.game.gameState));
 
 const decided = computed(
   () => isFinal.value && props.game.homeScore != null && props.game.awayScore != null,

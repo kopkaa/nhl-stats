@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { GetTeamSkaterStatsQuery, GetTeamGoalieStatsQuery, GetTeamGamesQuery } from '~/graphql/generated';
-import { GameState, PositionCode } from '~/graphql/generated';
+import { PositionCode } from '~/graphql/generated';
 
 type Skater = GetTeamSkaterStatsQuery['teamSkaterStats'][number];
 type Goalie = GetTeamGoalieStatsQuery['teamGoalieStats'][number];
@@ -35,13 +35,13 @@ const topGoalie = computed(() =>
 
 const recentGames = computed(() =>
   props.games
-    .filter((game) => game.gameState === GameState.Final || game.gameState === GameState.Off)
+    .filter((game) => isFinalState(game.gameState))
     .slice(0, 5),
 );
 
 const upcomingGames = computed(() =>
   props.games
-    .filter((game) => game.gameState === GameState.Fut || game.gameState === GameState.Pre)
+    .filter((game) => isUpcomingState(game.gameState))
     .slice(0, 3),
 );
 

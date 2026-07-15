@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import type { GetTeamGamesQuery } from '~/graphql/generated';
-import { GameState } from '~/graphql/generated';
 
 type Game = GetTeamGamesQuery['teamGames'][number];
 
@@ -11,13 +10,13 @@ const props = defineProps<{
 
 const recentGames = computed(() =>
   props.games
-    .filter((game) => game.gameState === GameState.Final || game.gameState === GameState.Off)
+    .filter((game) => isFinalState(game.gameState))
     .slice(0, 10),
 );
 
 const upcomingGames = computed(() =>
   props.games
-    .filter((game) => game.gameState === GameState.Fut || game.gameState === GameState.Pre)
+    .filter((game) => isUpcomingState(game.gameState))
     .slice(0, 10),
 );
 

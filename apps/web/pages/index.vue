@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import {
   Conference,
-  GameState,
   useGetGamesTodayQuery,
   useGetSkaterLeadersQuery,
   useGetStandingsQuery,
@@ -11,22 +10,14 @@ const LIVE_POLL_MS = 20000;
 const MINI_STANDINGS_SPOTS = 5;
 const LEADER_COUNT = 5;
 
-const pollInterval = ref(0);
-
 const { result: gamesResult, loading: gamesLoading } = useGetGamesTodayQuery(
   {},
-  () => ({ pollInterval: pollInterval.value }),
+  () => ({ pollInterval: hasLiveGame.value ? LIVE_POLL_MS : 0 }),
 );
 
 const games = computed(() => gamesResult.value?.gamesToday ?? []);
 
-const hasLiveGame = computed(() =>
-  games.value.some((game) => [GameState.Live, GameState.Crit].includes(game.gameState)),
-);
-
-watchEffect(() => {
-  pollInterval.value = hasLiveGame.value ? LIVE_POLL_MS : 0;
-});
+const hasLiveGame = computed(() => games.value.some((game) => isLiveState(game.gameState)));
 
 const { result: leadersResult } = useGetSkaterLeadersQuery({ limit: LEADER_COUNT });
 const pointLeaders = computed(() => leadersResult.value?.skaterLeaders.points ?? []);

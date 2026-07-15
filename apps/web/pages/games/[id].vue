@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { GameState, useGetGameDetailQuery } from '~/graphql/generated';
+import { useGetGameDetailQuery } from '~/graphql/generated';
 
 const LIVE_POLL_MS = 20000;
 
@@ -13,9 +13,7 @@ const { result, loading, error } = useGetGameDetailQuery(
 
 const game = computed(() => result.value?.gameDetail);
 
-const isLive = computed(() =>
-  game.value ? [GameState.Live, GameState.Crit].includes(game.value.gameState) : false,
-);
+const isLive = computed(() => (game.value ? isLiveState(game.value.gameState) : false));
 
 type Tab = 'summary' | 'stats';
 const activeTab = ref<Tab>('summary');
